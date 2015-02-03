@@ -20,7 +20,7 @@ typedef vector<pair<const LorentzVector *, double> > jets_with_corr_t;
 using namespace std;
 
 //Switches
-char* path = ".";
+char* path = "../output/V00-00-00";
 bool verbose = 0;
 unsigned int evt_cut = 74994186;
 
