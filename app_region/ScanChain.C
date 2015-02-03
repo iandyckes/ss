@@ -37,7 +37,7 @@ int ScanChain( TChain* chain, bool fast = true, int nEvents = -1, string skimFil
   // //Sumw2()!
 
   //---Load rate histos-----//
-  TFile *InputFile = new TFile("/home/users/iandyckes/CMSSW_5_3_18/ss/ss2015/babymaker/test_baby/rate_histos.root","read");
+  TFile *InputFile = new TFile("../measurement_region/rate_histos.root","read");
   TH2D *rate_histo = (TH2D*) InputFile->Get("rate_histo")->Clone("rate_histo");
   TH2D *rate_histo_e = (TH2D*) InputFile->Get("rate_histo_e")->Clone("rate_histo_e");
   TH2D *rate_histo_mu = (TH2D*) InputFile->Get("rate_histo_mu")->Clone("rate_histo_mu");
