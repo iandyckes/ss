@@ -6,13 +6,13 @@
 #include "Math/VectorUtil.h"
 #include <vector>
 
-#include "CMS2.h"
-#include "selections.h"
-#include "structAG.h"
+#include "include/CMS2.h"
+#include "include/selections.h"
+#include "include/structAG.h"
 //#include "MT2AG.h"
 #include "looper.h" 
-#include "fromCore.h"
-#include "structAG.h"
+#include "include/fromCore.h"
+#include "include/structAG.h"
 
 typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > LorentzVector;
 typedef vector<pair<const LorentzVector *, double> > jets_with_corr_t;
