@@ -1,7 +1,7 @@
 {
 
   //  TString tag = "V00-00-00";
-  string tag = "V00-00-00";
+  string tag = "V00-00-01";
 
   gROOT->ProcessLine(".L ScanChain.C+");
 
