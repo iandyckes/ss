@@ -91,7 +91,7 @@ int ScanChain( TChain* chain, bool fast = true, int nEvents = -1, string skimFil
     if(fast) tree->SetCacheSize(128*1024*1024);
     ss.Init(tree);
     
-    // Loop over Events in current file
+    // Loop over Events in current file   //ACTUALLY A LEPTON "EVENT" LOOP
     if( nEventsTotal >= nEventsChain ) continue;
     unsigned int nEventsTree = tree->GetEntriesFast();
     for( unsigned int event = 0; event < nEventsTree; ++event) {
@@ -119,44 +119,38 @@ int ScanChain( TChain* chain, bool fast = true, int nEvents = -1, string skimFil
 	  //Using gen level info to see if prompt -> no prompt contamination in measurement region
 	  //everything else is RECO (p4, id, passes_id, FO, etc.)
 	  
-	  for(int i =0; i < ss.el_p4().size(); i++)
+	 
+	  if( ss.motherID() != 1 )  //if lep is nonprompt
 		{
-		  if( ss.el_motherID()[i] != 1 )  //if el is nonprompt
+		  if( abs( ss.id() ) == 11 ) //it's an el
 			{
-			  if( abs( ss.el_id()[i] ) == 11 ) //already know it's an el.  Need?  Reco ID or Gen ID? Using RECO.
-				{
-				  if( ss.el_passes_id()[i] )  //if el is tight
-					{ 
-					  Nt = Nt + weight;
-					  Nt_e = Nt_e + weight;
-					}
-				  if( ss.el_FO()[i] )
-					{
-					  Nl = Nl + weight;     //l now means loose, as opposed to loose-not-tight
-					  Nl_e = Nl_e + weight;
-					}
+			  if( ss.passes_id() )  //if el is tight
+				{ 
+				  Nt = Nt + weight;
+				  Nt_e = Nt_e + weight;
 				}
-			} 
-		}
-	  for(int i =0; i < ss.mu_p4().size(); i++)
-		{
-		  if( ss.mu_motherID()[i] != 1 )  //if mu is nonprompt
+			  if( ss.FO() )
+				{
+				  Nl = Nl + weight;     //l now means loose, as opposed to loose-not-tight
+				  Nl_e = Nl_e + weight;
+				}
+			}
+
+		  if( abs( ss.id() ) == 13 ) //it's a mu
 			{
-			  if( abs( ss.mu_id()[i] ) == 13 ) //already know it's an mu.  Need?
-				{
-				  if( ss.mu_passes_id()[i] )  //if mu is tight
-					{ 
-					  Nt = Nt + weight;
-					  Nt_mu = Nt_mu + weight;
-					}
-				  if( ss.mu_FO()[i] )
-					{
-					  Nl = Nl + weight;       //l now means loose, as opposed to loose-not-tight
-					  Nl_mu = Nl_mu + weight;
-					}
+			  if( ss.passes_id() )  //if el is tight
+				{ 
+				  Nt = Nt + weight;
+				  Nt_mu = Nt_mu + weight;
 				}
-			} 
-		}
+			  if( ss.FO() )
+				{
+				  Nl = Nl + weight;     //l now means loose, as opposed to loose-not-tight
+				  Nl_mu = Nl_mu + weight;
+				}
+			}
+		} 
+
 	  //---------------------------------------------------------------------------------------------------------------------------
 
 	  //------------------------------------------------------------------------------------------
@@ -170,44 +164,36 @@ int ScanChain( TChain* chain, bool fast = true, int nEvents = -1, string skimFil
 	  //Using gen level info to see if prompt -> no prompt contamination in measurement region
 	  //everything else is RECO (p4, id, passes_id, FO, etc.)
 	  
-	  for(int i =0; i < ss.el_p4().size(); i++)  // <-- Using RECO p4
+
+	  if( ss.motherID() != 1 )  //if el is nonprompt (GEN info)
 		{
-		  if( ss.el_motherID()[i] != 1 )  //if el is nonprompt (GEN info)
+		  if( abs( ss.id() ) == 11 ) // it's an el
 			{
-			  if( abs( ss.el_id()[i] ) == 11 ) // <-- Using RECO ID
-				{
-				  if( ss.el_passes_id()[i] )  //if el is tight
-					{ 
-					  Nt_histo->Fill(ss.el_p4()[i].pt(), ss.el_p4()[i].eta(), weight);     //fill histo with fake pt, eta
-					  Nt_histo_e->Fill(ss.el_p4()[i].pt(), ss.el_p4()[i].eta(), weight);   //
-					}
-				  if( ss.el_FO()[i] )  //if el is FO
-					{
-					  Nl_histo->Fill(ss.el_p4()[i].pt(), ss.el_p4()[i].eta(), weight);     //fill histo with fake pt, eta 
-					  Nl_histo_e->Fill(ss.el_p4()[i].pt(), ss.el_p4()[i].eta(), weight);   //  <-- loose (as opposed to l!t)			
-					}
+			  if( ss.passes_id() )  //if el is tight
+				{ 
+				  Nt_histo->Fill(ss.p4().pt(), ss.p4().eta(), weight);     //fill histo with fake pt, eta
+				  Nt_histo_e->Fill(ss.p4().pt(), ss.p4().eta(), weight);   //
 				}
-			} 
-		}
-	  for(int i =0; i < ss.mu_p4().size(); i++)  // <-- Using RECO p4
-		{
-		  if( ss.mu_motherID()[i] != 1 )  //if mu is nonprompt (GEN info)
+			  if( ss.FO() )  //if el is FO
+				{
+				  Nl_histo->Fill(ss.p4().pt(), ss.p4().eta(), weight);     //fill histo with fake pt, eta 
+				  Nl_histo_e->Fill(ss.p4().pt(), ss.p4().eta(), weight);   //  <-- loose (as opposed to l!t)			
+				}
+			}
+		  if( abs( ss.id() ) == 13 ) // it's a mu
 			{
-			  if( abs( ss.mu_id()[i] ) == 13 ) // <-- Using RECO ID!!!
-				{
-				  if( ss.mu_passes_id()[i] )  //if mu is tight
-					{ 
-					  Nt_histo->Fill(ss.mu_p4()[i].pt(), ss.mu_p4()[i].eta(), weight);     //fill histo with fake pt, eta
-					  Nt_histo_mu->Fill(ss.mu_p4()[i].pt(), ss.mu_p4()[i].eta(), weight);   //fill histo with fake pt, eta
-					}
-				  if( ss.mu_FO()[i] )
-					{
-					  Nl_histo->Fill(ss.mu_p4()[i].pt(), ss.mu_p4()[i].eta(), weight);     //fill histo with fake pt, eta  <-- loose (not l!t)
-					  Nl_histo_mu->Fill(ss.mu_p4()[i].pt(), ss.mu_p4()[i].eta(), weight);  // <-- loose (not l!t)			
-					}
+			  if( ss.passes_id() )  //if mu is tight
+				{ 
+				  Nt_histo->Fill(ss.p4().pt(), ss.p4().eta(), weight);     //fill histo with fake pt, eta
+				  Nt_histo_mu->Fill(ss.p4().pt(), ss.p4().eta(), weight);   //
 				}
-			} 
-		}
+			  if( ss.FO() )  //if el is FO
+				{
+				  Nl_histo->Fill(ss.p4().pt(), ss.p4().eta(), weight);     //fill histo with fake pt, eta 
+				  Nl_histo_mu->Fill(ss.p4().pt(), ss.p4().eta(), weight);   //  <-- loose (as opposed to l!t)			
+				}
+			}
+		} 
 
 	  //---------------------------------------------------------------------------------------------------------------------------
 	  

@@ -30,10 +30,9 @@ class babyMaker {
   public:
     void MakeBabyNtuple(const char* output_name);
     void InitBabyNtuple();
+    void InitMuonBranches(); //init. Muon variables only.
+    void InitElectronBranches(); //init. Electron variables only
     int looper(TChain* chain, char* output_name, int nEvents = -1, string signal_in = "");
-  //    hyp_result_t chooseBestHyp();
-  //    int isGoodHyp(int iHyp, int analType = 2);
-  //    particle_t getThirdLepton(int hyp);
 
   protected:
     TFile* BabyFile;
@@ -59,80 +58,64 @@ class babyMaker {
     float kfactor;      
     float gen_met;      
     float gen_met_phi;  
-    float njets;  //<----------------------need
-    float ht;  //<----------------------need
-    int nbtags_uncorr;  //<----------------------maybe???
-    vector <LorentzVector> jets;  //<----------------------maybe???
-    vector <LorentzVector> btags_p4_uncorr;  //<----------------------maybe???
-    vector <LorentzVector> btags;  //<----------------------maybe???
-    int nbtags;   //<----------------------maybe???
-    float mt;  //<----------------------maybe???
-    vector <float> btags_disc_uncorr;   //<----------------------maybe???
-    vector <float> jets_disc;
-    vector <float> btags_disc;
+    float njets;  //work on this
+    float ht;  //work on this
+    int nbtags_uncorr;  //<--------------------------maybe???
+    vector <LorentzVector> jets;  //work on this
+    vector <LorentzVector> btags_p4_uncorr;  //<-----maybe???
+    vector <LorentzVector> btags;  //work on this
+    int nbtags;   //work on this
+    float mt;  //<-----------------------------------maybe???
+    vector <float> btags_disc_uncorr;   //-----------maybe???
+    vector <float> jets_disc;   //<------------------maybe???
+    vector <float> btags_disc;   //<-----------------maybe???
     TString sample;
-    vector <LorentzVector> genps_p4;  //<----------------------maybe??? 
+    vector <LorentzVector> genps_p4;  //<------------maybe??? 
     vector <int> genps_id;  //<----------------------maybe???
-    vector <int> genps_id_mother;  //<----------------------maybe???
-    vector <int> genps_status;  //<----------------------maybe???
-	vector <int> genps_id_grandma;  //<----------------------maybe???
+    vector <int> genps_id_mother;  //<---------------maybe???
+    vector <int> genps_status;  //<------------------maybe???
+	vector <int> genps_id_grandma;  //<--------------maybe???
   //-------------------//
   //------MINE---------//
+      //---both--//
+  LorentzVector p4;
+  LorentzVector mc_p4;
+  LorentzVector mc_motherp4;
+  int id; 
+  int idx;
+  float d0; //dxy?
+  float dZ;
+  float d0_err;
+  int motherID;
+  int mc_id;
+  float iso; //RelIso03 (EA?)
+  bool passes_id;
+  bool FO;
+  float ip3d;
+  float ip3derr;
+  int type;
       //---els---//
-  vector<LorentzVector> el_p4;
-  vector<LorentzVector> el_mc_p4;
-  vector<LorentzVector> el_mc_motherp4;
-  vector<int> el_id; 
-  vector<int> el_idx;
-  vector<float> el_d0; //dxy?
-  vector<float> el_dZ;
-  vector<float> el_d0_err;
-  vector<int> el_motherID;
-  vector<int> el_mc_id;
-  vector<float> el_iso; //RelIso03 (EA?)
-  vector<bool> el_passes_id;
-  vector<bool> el_FO;
-  vector<float> el_sigmaIEtaIEta_full5x5;//below
-  vector<float> el_etaSC;
-  vector<float> el_dEtaIn;
-  vector<float> el_dPhiIn;
-  vector<float> el_hOverE;
-  vector<float> el_ip3d;
-  vector<float> el_ip3derr;
-  vector<float> el_ecalEnergy;
-  vector<float> el_eOverPIn;
-  vector<bool> el_conv_vtx_flag;
-  vector<int> el_exp_innerlayers;
-  vector<int> el_charge;
-  vector<int> el_sccharge;
-  vector<int> el_ckf_charge;
-  vector<int> el_trk_charge;
-  vector<bool> el_threeChargeAgree;
-  vector<int> el_type;
-
+  float el_sigmaIEtaIEta_full5x5;
+  float el_etaSC;
+  float el_dEtaIn;
+  float el_dPhiIn;
+  float el_hOverE;
+  float el_ecalEnergy;
+  float el_eOverPIn;
+  bool el_conv_vtx_flag;
+  int el_exp_innerlayers;
+  int el_charge;
+  int el_sccharge;
+  int el_ckf_charge;
+  int el_trk_charge;
+  bool el_threeChargeAgree;
       //---mus---//
-  vector<LorentzVector> mu_p4;
-  vector<LorentzVector> mu_mc_p4;
-  vector<LorentzVector> mu_mc_motherp4;
-  vector<int> mu_id; 
-  vector<int> mu_idx;
-  vector<float> mu_d0; //dxy?
-  vector<float> mu_dZ;
-  vector<float> mu_d0_err;
-  vector<int> mu_motherID;
-  vector<int> mu_mc_id;
-  vector<float> mu_iso;  //RelIso03 (EA?)
-  vector<bool> mu_passes_id;
-  vector<bool> mu_FO; 
-  vector<int> mu_type; //below
-  vector<int> mu_pid_PFMuon;
-  vector<float> mu_gfit_chi2;
-  vector<int> mu_gfit_validSTAHits;
-  vector<int> mu_numberOfMatchedStations;
-  vector<int> mu_validPixelHits;
-  vector<int> mu_nlayers;
-  vector<float> mu_ip3d;
-  vector<float> mu_ip3derr;
+  int mu_pid_PFMuon;
+  float mu_gfit_chi2;
+  int mu_gfit_validSTAHits;
+  int mu_numberOfMatchedStations;
+  int mu_validPixelHits;
+  int mu_nlayers;
   //---------------------
     
 };
@@ -183,27 +166,29 @@ void babyMaker::MakeBabyNtuple(const char* output_name){
   BabyTree->Branch("genps_status", &genps_status);
   BabyTree->Branch("genps_id_grandma", &genps_id_grandma);
   //--------------------MINE----------------------------
-         //---els---//
-  BabyTree->Branch("el_p4", &el_p4);
-  BabyTree->Branch("el_mc_p4", &el_mc_p4);
-  BabyTree->Branch("el_mc_motherp4", &el_mc_motherp4);
-  BabyTree->Branch("el_id", &el_id);
-  BabyTree->Branch("el_idx", &el_idx);
-  BabyTree->Branch("el_d0", &el_d0);
-  BabyTree->Branch("el_dZ", &el_dZ);
-  BabyTree->Branch("el_d0_err", &el_d0_err);
-  BabyTree->Branch("el_motherID", &el_motherID);
-  BabyTree->Branch("el_mc_id", &el_mc_id);
-  BabyTree->Branch("el_iso", &el_iso);
-  BabyTree->Branch("el_passes_id", &el_passes_id);
-  BabyTree->Branch("el_FO", &el_FO);
-  BabyTree->Branch("el_sigmaIEtaIEta_full5x5", &el_sigmaIEtaIEta_full5x5);//below
+         //---both--//
+  BabyTree->Branch("p4", &p4);
+  BabyTree->Branch("mc_p4", &mc_p4);
+  BabyTree->Branch("mc_motherp4", &mc_motherp4);
+  BabyTree->Branch("id", &id);
+  BabyTree->Branch("idx", &idx);
+  BabyTree->Branch("d0", &d0);
+  BabyTree->Branch("dZ", &dZ);
+  BabyTree->Branch("d0_err", &d0_err);
+  BabyTree->Branch("motherID", &motherID);
+  BabyTree->Branch("mc_id", &mc_id);
+  BabyTree->Branch("iso", &iso);
+  BabyTree->Branch("passes_id", &passes_id);
+  BabyTree->Branch("FO", &FO);
+  BabyTree->Branch("ip3d", &ip3d);
+  BabyTree->Branch("ip3derr", &ip3derr);
+  BabyTree->Branch("type", &type);
+          //---els---//
+  BabyTree->Branch("el_sigmaIEtaIEta_full5x5", &el_sigmaIEtaIEta_full5x5);
   BabyTree->Branch("el_etaSC", &el_etaSC);
   BabyTree->Branch("el_dEtaIn", &el_dEtaIn);
   BabyTree->Branch("el_dPhiIn", &el_dPhiIn);
   BabyTree->Branch("el_hOverE", &el_hOverE);
-  BabyTree->Branch("el_ip3d", &el_ip3d);
-  BabyTree->Branch("el_ip3derr", &el_ip3derr);
   BabyTree->Branch("el_ecalEnergy", &el_ecalEnergy);
   BabyTree->Branch("el_eOverPIn", &el_eOverPIn);
   BabyTree->Branch("el_conv_vtx_flag", &el_conv_vtx_flag);
@@ -212,31 +197,13 @@ void babyMaker::MakeBabyNtuple(const char* output_name){
   BabyTree->Branch("el_sccharge", &el_sccharge);
   BabyTree->Branch("el_ckf_charge", &el_ckf_charge);
   BabyTree->Branch("el_threeChargeAgree", &el_threeChargeAgree);
-  BabyTree->Branch("el_type", &el_type);
-
          //---mus---//
-  BabyTree->Branch("mu_p4", &mu_p4);
-  BabyTree->Branch("mu_mc_p4", &mu_mc_p4);
-  BabyTree->Branch("mu_mc_motherp4", &mu_mc_motherp4);
-  BabyTree->Branch("mu_id", &mu_id);
-  BabyTree->Branch("mu_idx", &mu_idx);
-  BabyTree->Branch("mu_d0", &mu_d0);
-  BabyTree->Branch("mu_dZ", &mu_dZ);
-  BabyTree->Branch("mu_d0_err", &mu_d0_err);
-  BabyTree->Branch("mu_motherID", &mu_motherID);
-  BabyTree->Branch("mu_mc_id", &mu_mc_id);
-  BabyTree->Branch("mu_iso", &mu_iso);
-  BabyTree->Branch("mu_passes_id", &mu_passes_id);
-  BabyTree->Branch("mu_FO", &mu_FO);
-  BabyTree->Branch("mu_type", &mu_type); //below
   BabyTree->Branch("mu_pid_PFMuon", &mu_pid_PFMuon);
   BabyTree->Branch("mu_gfit_chi2", &mu_gfit_chi2);
   BabyTree->Branch("mu_gfit_validSTAHits", &mu_gfit_validSTAHits);
   BabyTree->Branch("mu_numberOfMatchedStations", &mu_numberOfMatchedStations);
   BabyTree->Branch("mu_validPixelHits", &mu_validPixelHits);
   BabyTree->Branch("mu_nlayers", &mu_nlayers);
-  BabyTree->Branch("mu_ip3d", &mu_ip3d);
-  BabyTree->Branch("mu_ip3derr", &mu_ip3derr);
   //----------------------------------------------------
 }
 
@@ -278,63 +245,110 @@ void babyMaker::InitBabyNtuple(){
     genps_status.clear();
     genps_id_grandma.clear();
 	//--------MINE------------
+         //---both--//
+	//p4 = -1;  //IDK how to init. a LorentzVector
+	//mc_p4 = -1;   //IDK how to init. a LorentzVector
+	//mc_motherp4 = -1;   //IDK how to init. a LorentzVector
+	id = -1; 
+	idx = -1;
+	d0 = -1;
+	dZ = -1;
+	d0_err = -1;
+	motherID = -1;
+    mc_id = -1;
+	iso = -1;
+	passes_id = 0;
+	FO = 0;
+	ip3d = -1;
+	ip3derr = -1;
+	type = -1;
          //---els---//
-	el_p4.clear();
-	el_mc_p4.clear();
-	el_mc_motherp4.clear();
-	el_id.clear(); 
-	el_idx.clear();
-	el_d0.clear();
-	el_dZ.clear();
-	el_d0_err.clear();
-	el_motherID.clear();
-    el_mc_id.clear();
-	el_iso.clear();
-	el_passes_id.clear();
-	el_FO.clear();
-	el_sigmaIEtaIEta_full5x5.clear();//below
-	el_etaSC.clear();
-	el_dEtaIn.clear();
-	el_dPhiIn.clear();
-	el_hOverE.clear();
-	el_ip3d.clear();
-	el_ip3derr.clear();
-	el_ecalEnergy.clear();
-	el_eOverPIn.clear();
-	el_conv_vtx_flag.clear();
-	el_exp_innerlayers.clear();
-	el_charge.clear();
-	el_sccharge.clear();
-	el_ckf_charge.clear();
-	el_trk_charge.clear();
-	el_threeChargeAgree.clear();
-	el_type.clear();
+	el_sigmaIEtaIEta_full5x5 = -1;//below
+	el_etaSC = -1;
+	el_dEtaIn = -1;
+	el_dPhiIn = -1;
+	el_hOverE = -1;
+	el_ecalEnergy = -1;
+	el_eOverPIn = -1;
+	el_conv_vtx_flag = 0;
+	el_exp_innerlayers = -1;
+	el_charge = -1;
+	el_sccharge = -1;
+	el_ckf_charge = -1;
+	el_trk_charge = -1;
+	el_threeChargeAgree = 0;
          //---mus---//
-	mu_p4.clear();
-	mu_mc_p4.clear();
-	mu_mc_motherp4.clear();
-	mu_id.clear(); 
-    mu_idx.clear();
-	mu_d0.clear();
-    mu_dZ.clear();
-	mu_d0_err.clear();
-	mu_motherID.clear();
-	mu_mc_id.clear();
-	mu_iso.clear();
-	mu_passes_id.clear();
-	mu_FO.clear();
-	mu_type.clear(); //below
-	mu_pid_PFMuon.clear();
-	mu_gfit_chi2.clear();
-	mu_gfit_validSTAHits.clear();
-	mu_numberOfMatchedStations.clear();
-	mu_validPixelHits.clear();
-	mu_nlayers.clear();
-	mu_ip3d.clear();
-	mu_ip3derr.clear();
+	mu_pid_PFMuon = -1;
+	mu_gfit_chi2 = -1;
+	mu_gfit_validSTAHits = -1;
+	mu_numberOfMatchedStations = -1;
+	mu_validPixelHits = -1;
+	mu_nlayers = -1;
 	//------------------------
 } 
 
+void babyMaker::InitMuonBranches(){
+  //---both---//
+	//p4 = -1;
+	//mc_p4 = -1;
+	//mc_motherp4 = -1;
+	id = -1; 
+    idx = -1;
+	d0 = -1;
+    dZ = -1;
+	d0_err = -1;
+	motherID = -1;
+	mc_id = -1;
+	iso = -1;
+	passes_id = 0;
+	FO = 0;
+	type = -1;
+	ip3d = -1;
+	ip3derr = -1;
+	//---mus---//
+	mu_pid_PFMuon = -1;
+	mu_gfit_chi2 = -1;
+	mu_gfit_validSTAHits = -1;
+	mu_numberOfMatchedStations = -1;
+	mu_validPixelHits = -1;
+	mu_nlayers = -1;
+	//------------------------
+}
+
+void babyMaker::InitElectronBranches(){
+  //---both--//
+	//p4 = -1;  //IDK how to init. a LorentzVector
+	//mc_p4 = -1;   //IDK how to init. a LorentzVector
+	//mc_motherp4 = -1;   //IDK how to init. a LorentzVector
+	id = -1; 
+	idx = -1;
+	d0 = -1;
+	dZ = -1;
+	d0_err = -1;
+	motherID = -1;
+    mc_id = -1;
+	iso = -1;
+	passes_id = 0;
+	FO = 0;
+	ip3d = -1;
+	ip3derr = -1;
+	type = -1;
+	//---els---//
+	el_sigmaIEtaIEta_full5x5 = -1;
+	el_etaSC = -1;
+	el_dEtaIn = -1;
+	el_dPhiIn = -1;
+	el_hOverE = -1;
+	el_ecalEnergy = -1;
+	el_eOverPIn = -1;
+	el_conv_vtx_flag = 0;
+	el_exp_innerlayers = -1;
+	el_charge = -1;
+	el_sccharge = -1;
+	el_ckf_charge = -1;
+	el_trk_charge = -1;
+	el_threeChargeAgree = 0;
+}
 
 template <typename T> int sgn(T val){
     return (T(0) < val) - (val < T(0));
@@ -455,98 +469,15 @@ int babyMaker::looper(TChain* chain, char* output_name, int nEvents, string sign
       filt_eebadsc = is_real_data ? tas::filt_eeBadSc() : 1;
       scale1fb = is_real_data ? 1 : tas::evt_scale1fb();
 	  
-      //Muon Loop
-	  //cout<<"\nBegin Muon looping"<<endl;	  
-	  for(unsigned int i=0; i<tas::mus_p4().size(); i++)  //What RECO and GEN variables are needed?
-		{	
-		  //		  cout<<i<<" of "<<tas::mus_p4().size()<<endl;
-		  //cout<<"reco size: "<<tas::mus_p4().size()<<" mc size: "<<tas::mus_mc_p4().size()<<endl;
-		  if (!isGoodVetoMuon(i)) continue;  //"fix me" in selection.cc
-
-		  mu_p4.push_back(tas::mus_p4()[i]); 
-		  mu_mc_p4.push_back(tas::mus_mc_p4()[i]);
-		  mu_id.push_back(-13.0*tas::mus_charge()[i]);
-		  mu_idx.push_back(i);
-		  int id = mu_id[mu_id.size()-1];  //can't use mu_id[i] if veto turned on (might not be ith element)
-		  int j = mu_idx[mu_idx.size()-1]; // just i? can't use idx[i] if veto turned on
-		  mu_mc_id.push_back(tas::mus_mc_id().at(j));
-		  mu_d0.push_back(leptonD0(id, j));  //mu_idx[i] is just i, but not same i for final vector if veto leps
-		  mu_d0_err.push_back(leptonD0err(id, j)); //mu_id[i].
-		  mu_dZ.push_back(leptonDZ(id, j));
-		  mu_iso.push_back(muRelIso03(j));
-		  mu_pid_PFMuon.push_back(tas::mus_pid_PFMuon()[i]); //new below
-		  mu_gfit_chi2.push_back(tas::mus_gfit_chi2()[i]);
-		  mu_gfit_validSTAHits.push_back(tas::mus_gfit_validSTAHits()[i]);
-		  mu_numberOfMatchedStations.push_back(tas::mus_numberOfMatchedStations()[i]);
-		  mu_validPixelHits.push_back(tas::mus_validPixelHits()[i]);
-		  mu_nlayers.push_back(tas::mus_nlayers()[i]);
-		  mu_ip3d.push_back(tas::mus_ip3d()[i]);
-		  mu_ip3derr.push_back(tas::mus_ip3derr()[i]);
-
-		  mu_passes_id.push_back(isGoodLepton(id, j));   //"fix me" in selection.cc
-		  mu_FO.push_back(isFakableMuon(j));    //"fix me" in selection.cc
-
-		  Lep mu_temp = Lep(id, j);
-		  mu_motherID.push_back(lepMotherID(mu_temp));
-		  mu_mc_motherp4.push_back(tas::mus_mc_motherp4()[i]);
-		  
-		  // cout<<"\nEnd Muon loop"<<endl;
-		} //close muon loop
-	  
-      //Electron Loop
-	  //cout<<"\nBegin electron looping"<<endl;	  
-	  for(unsigned int i=0; i<tas::els_p4().size(); i++)
-	  	{
-		  
-		  if (!isGoodVetoElectron(i)) continue; //"fix me" in selection.cc. Use at()?
-
-		  el_p4.push_back(tas::els_p4()[i]);  //use at()?  
-		  el_mc_p4.push_back(tas::els_mc_p4()[i]);  
-		  el_id.push_back(-11.0*tas::els_charge()[i]); 
-		  el_idx.push_back(i);
-		  int id = el_id[el_id.size()-1]; //can't use mu_id[i] if veto turned on (might not be ith element)
-		  int j = el_idx[el_idx.size()-1];  // just i? can't use idx[i] if veto turned on
-		  el_mc_id.push_back(tas::els_mc_id().at(j));  
-		  el_d0.push_back(leptonD0(id, j));
-		  el_d0_err.push_back(leptonD0err(id, j));
-		  el_dZ.push_back(leptonDZ(id, j));
-		  el_iso.push_back(eleRelIso03(j));
-		  el_sigmaIEtaIEta_full5x5.push_back(tas::els_sigmaIEtaIEta_full5x5()[i]);//new below
-		  el_etaSC.push_back(tas::els_etaSC()[i]);
-		  el_dEtaIn.push_back(tas::els_dEtaIn()[i]);
-		  el_dPhiIn.push_back(tas::els_dPhiIn()[i]);
-		  el_hOverE.push_back(tas::els_hOverE()[i]);
-		  el_ip3d.push_back(tas::els_ip3d()[i]);
-		  el_ip3derr.push_back(tas::els_ip3derr()[i]);
-		  el_ecalEnergy.push_back(tas::els_ecalEnergy()[i]);
-		  el_eOverPIn.push_back(tas::els_eOverPIn()[i]);
-		  el_conv_vtx_flag.push_back(tas::els_conv_vtx_flag()[i]);
-		  el_exp_innerlayers.push_back(tas::els_exp_innerlayers()[i]);
-		  el_charge.push_back(tas::els_charge()[i]);    //check on this
-		  el_sccharge.push_back(tas::els_sccharge()[i]);    //check on this
-		  el_ckf_charge.push_back(tas::els_ckf_charge()[i]);    //check on this
-		  el_trk_charge.push_back(tas::els_trk_charge()[i]);
-		  el_threeChargeAgree.push_back(threeChargeAgree(j));
-		  el_type.push_back(tas::els_type()[i]);
-
-		  el_passes_id.push_back(isGoodLepton(id, j));  //"fix me" in selection.cc
-		  el_FO.push_back(isFakableElectron(j));  //"fix me" in selection.cc
-
-		  Lep el_temp = Lep(id, j);
-		  el_motherID.push_back(lepMotherID(el_temp));
-		  el_mc_motherp4.push_back(tas::els_mc_motherp4()[i]); 
-
-	  	  //cout<<"\nEnd electron loop"<<endl;
-	  	} //close electron loop
-	  
-      //Determine and save jet and b-tag variables
+	  //-------------------------------------------------------------------------------------------------------------
+	  //Determine and save jet and b-tag variables
       ht = 0;
       for (unsigned int i = 0; i < tas::pfjets_p4().size(); i++)
 	  	{
 	  	  LorentzVector jet = tas::pfjets_p4().at(i);
 
 	  	  //Kinematic jet cuts
-	  	  if (jet.pt() < 40) continue;   //<------WHAT CUTS DO WE WANT???
+	  	  if (jet.pt() < 25) continue;   //<------WHAT CUTS DO WE WANT???
 	  	  if (fabs(jet.eta()) > 2.4) continue;
 
 	  	  //Verbose
@@ -598,9 +529,99 @@ int babyMaker::looper(TChain* chain, char* output_name, int nEvents, string sign
         cout << "nbtags: " <<  nbtags << endl;
         for (unsigned int i = 0; i < jets.size(); i++) cout << i << " " << jets[i].pt() << " " << jets[i].eta() << endl;
       } 
+	  //-----------------------------------------------------------------------------------------------------------------------
 
+	  //Muon Loop
+	  //cout<<"\nBegin Muon looping"<<endl;	  
+	  for(unsigned int i=0; i<tas::mus_p4().size(); i++)  //What RECO and GEN variables are needed?
+		{	
+		  if (!isGoodVetoMuon(i)) continue;  //"fix me" in selection.cc
 
-	  BabyTree->Fill(); 
+		  p4 = tas::mus_p4().at(i); 
+		  mc_p4 = tas::mus_mc_p4().at(i);
+		  id = -13.0*tas::mus_charge().at(i);
+		  idx = i;  
+		  mc_id = tas::mus_mc_id().at(i);
+		  d0 = leptonD0(id, i);
+		  d0_err = leptonD0err(id, i);
+		  dZ = leptonDZ(id, i);
+		  iso = muRelIso03(i);
+		  mu_pid_PFMuon = tas::mus_pid_PFMuon().at(i);
+		  mu_gfit_chi2 = tas::mus_gfit_chi2().at(i);
+		  mu_gfit_validSTAHits = tas::mus_gfit_validSTAHits().at(i);
+		  mu_numberOfMatchedStations = tas::mus_numberOfMatchedStations().at(i);
+		  mu_validPixelHits = tas::mus_validPixelHits().at(i);
+		  mu_nlayers = tas::mus_nlayers().at(i);
+		  ip3d = tas::mus_ip3d().at(i);
+		  ip3derr = tas::mus_ip3derr().at(i);
+		  type = tas::mus_type().at(i);
+
+		  passes_id = isGoodMuon(i);   //"fix me" in selection.cc.
+		  FO = isFakableMuon(i);    //"fix me" in selection.cc
+		 
+		  Lep mu_temp = Lep(id, i);
+		  motherID = lepMotherID(mu_temp);
+		  mc_motherp4 = tas::mus_mc_motherp4().at(i);
+		  
+		  BabyTree->Fill(); 
+		  //InitMuonBranches(); //can put this here to be extra safe between muon interations
+		                      //or can put outside loop to protect 1st el interation
+
+		  // cout<<"\nEnd Muon loop"<<endl;
+		} //close muon loop
+	
+	  //AFTER LAST MUON INTERATION, MUON VARIABLES STILL SET (NOT GARBAGE VALUES).
+	  //SO THEY WILL BE FILLED WITH THE EACH ELECTRON FILL.  NEED TO STOP THIS.
+	  //LEPTON VARIABLES IN COMMON SHOULD BE OVERWRITTEN.
+	  InitMuonBranches();
+	  
+      //Electron Loop
+	  //cout<<"\nBegin electron looping"<<endl;	  
+	  for(unsigned int i=0; i<tas::els_p4().size(); i++)
+	  	{
+		  
+		  if (!isGoodVetoElectron(i)) continue; //"fix me" in selection.cc. Use at()?
+
+		  p4 = tas::els_p4().at(i);    
+		  mc_p4 = tas::els_mc_p4().at(i);  
+		  id = -11.0*tas::els_charge().at(i); 
+		  idx = i;
+		  mc_id = tas::els_mc_id().at(i);  
+		  d0 = leptonD0(id, i);
+		  d0_err = leptonD0err(id, i);
+		  dZ = leptonDZ(id, i);
+		  iso = eleRelIso03(i);
+		  el_sigmaIEtaIEta_full5x5 = tas::els_sigmaIEtaIEta_full5x5().at(i);//new below
+		  el_etaSC = tas::els_etaSC().at(i);
+		  el_dEtaIn = tas::els_dEtaIn().at(i);
+		  el_dPhiIn = tas::els_dPhiIn().at(i);
+		  el_hOverE = tas::els_hOverE().at(i);
+		  ip3d = tas::els_ip3d().at(i);
+		  ip3derr = tas::els_ip3derr().at(i);
+		  el_ecalEnergy = tas::els_ecalEnergy().at(i);
+		  el_eOverPIn = tas::els_eOverPIn().at(i);
+		  el_conv_vtx_flag = tas::els_conv_vtx_flag().at(i);
+		  el_exp_innerlayers = tas::els_exp_innerlayers().at(i);
+		  el_charge = tas::els_charge().at(i);    //check on this
+		  el_sccharge = tas::els_sccharge().at(i);    //check on this
+		  el_ckf_charge = tas::els_ckf_charge().at(i);    //check on this
+		  el_trk_charge = tas::els_trk_charge().at(i);
+		  el_threeChargeAgree = threeChargeAgree(i);
+		  type = tas::els_type().at(i);
+
+		  passes_id = isGoodElectron(i);  //"fix me" in selection.cc
+		  FO = isFakableElectron(i);  //"fix me" in selection.cc
+ 
+		  Lep el_temp = Lep(id, i);
+		  motherID = lepMotherID(el_temp);
+		  mc_motherp4 = tas::els_mc_motherp4().at(i); 
+
+		  BabyTree->Fill(); 
+		  //InitElectronBranches();  //can put this here to be extra safe between el interation
+	  
+	  	  //cout<<"\nEnd electron loop"<<endl;
+	  	} //close electron loop
+	  
 	  
     }//close event loop
     

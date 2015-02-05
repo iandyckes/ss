@@ -1,12 +1,9 @@
 {
-
-  //  TString tag = "V00-00-00";
   string tag = "V00-00-01";
 
   gROOT->ProcessLine(".L ScanChain.C+");
 
   TChain *qcd = new TChain("t"); 
-  //  qcd->Add( Form("../output/%s/qcd1.root",tag.c_str()) );
   qcd->Add( Form("../fake_rate_output/%s/qcd1.root",tag.c_str()) );
 
   // TChain *ttbar = new TChain("t"); 
