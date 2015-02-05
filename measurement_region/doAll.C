@@ -1,5 +1,5 @@
 {
-  string tag = "V00-00-01";
+  string tag = "V00-00-02";
 
   gROOT->ProcessLine(".L ScanChain.C+");
 
