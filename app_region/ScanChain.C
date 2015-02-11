@@ -23,6 +23,20 @@
 using namespace std;
 using namespace samesign;
 
+float getFakeRate(TH2D* histo, float pt, float eta)
+{
+  float e = 0;
+  if(pt < 100.)
+	{e = histo->GetBinContent( histo->FindBin(pt, fabs(eta) ));}
+  else
+	{
+	  e = histo->GetBinContent( histo->FindBin(99., fabs(eta) ));
+	  cout<<"fake rate = " << /*histo->GetBinContent( histo->FindBin(pt, fabs(eta) ))*/ e <<", ";
+	}
+  return e;
+}
+
+
 int ScanChain( TChain* chain, bool fast = true, int nEvents = -1, string skimFilePrefix = "test") {
 
   // Benchmark
@@ -102,10 +116,16 @@ int ScanChain( TChain* chain, bool fast = true, int nEvents = -1, string skimFil
       // Analysis Code
 	  float weight = ss.scale1fb()*10.0;
 	  
-	  if( !( ss.lep1_p4().pt() > 20 && ss.lep2_p4().pt() > 20  && ss.njets() >= 2 && (ss.ht() > 500 ? 1 : ss.met() > 30) ) )
+	  if( !( ss.lep1_p4().pt() > 25 && ss.lep2_p4().pt() > 25  && ss.njets() >= 2 && (ss.ht() > 500 ? 1 : ss.met() > 30) ) )
 	  	{
 	  	  {continue;}
 	  	} 
+
+	  //need this? NOT SO SURE, otherwise overflow causesmay cause some issues with e = 1.
+	  //make eta cut at 2.4 (not enforced anywhere else on ttbar).  pt > 20 redundant.
+	  //don't vetos those above 100. Just use last bin for fake rate.
+	  if(ss.lep1_p4().pt() < 20. || ss.lep2_p4().pt() < 20. || fabs(ss.lep1_p4().eta()) > 2.4 || fabs(ss.lep2_p4().eta()) > 2.4)
+	  	{continue;}
 	  
 	  if (ss.hyp_class() == 3)
 		{
@@ -193,18 +213,22 @@ int ScanChain( TChain* chain, bool fast = true, int nEvents = -1, string skimFil
 			  if( ss.lep1_passes_id() && !ss.lep2_passes_id() )  //lep1 is tight, lep2 is loose-not-tight
 				{	
 				  if( abs(ss.lep2_id()) == 11 )  //if el, use el rate.  FILL WITH NONPROMPT
-					{e2 = rate_histo_e->GetBinContent( rate_histo_e->FindBin(ss.lep2_p4().pt(), ss.lep2_p4().eta()) );}
+					//{e2 = rate_histo_e->GetBinContent( rate_histo_e->FindBin(ss.lep2_p4().pt(), fabs(ss.lep2_p4().eta())) );}
+					{e2 = getFakeRate( rate_histo_e, ss.lep2_p4().pt(), fabs(ss.lep2_p4().eta()) );}
 				  else if( abs(ss.lep2_id()) == 13 )  //if my, use mu rate.  FILL WITH NONPROMPT
-					{e2 = rate_histo_mu->GetBinContent( rate_histo_mu->FindBin(ss.lep2_p4().pt(), ss.lep2_p4().eta()) );}
-				  Npn = Npn + (e2/(1-e2))*weight;	
+					//{e2 = rate_histo_mu->GetBinContent( rate_histo_mu->FindBin(ss.lep2_p4().pt(), fabs(ss.lep2_p4().eta())) );}
+					{e2 = getFakeRate( rate_histo_mu, ss.lep2_p4().pt(), fabs(ss.lep2_p4().eta()) ) ;}
+				  Npn = Npn + (e2/(1-e2))*weight;
 				}
 			  else if( !ss.lep1_passes_id() && ss.lep2_passes_id() )   //lep1 is loose-not-tight, lep2 is tight
 				{
 				  if( abs(ss.lep1_id()) == 11 )	//if el, use el rate.  FILL WITH NONPROMPT			  
-					{e1 = rate_histo_e->GetBinContent( rate_histo_e->FindBin(ss.lep1_p4().pt(), ss.lep1_p4().eta()) );}
+					//{e1 = rate_histo_e->GetBinContent( rate_histo_e->FindBin(ss.lep1_p4().pt(), fabs(ss.lep1_p4().eta())) );}
+					{e1 = getFakeRate(rate_histo_e, ss.lep1_p4().pt(), fabs(ss.lep1_p4().eta()) );}
 				  else if( abs(ss.lep1_id()) == 13 ) //if mu, use mu rate.  FILL WITH NONPROMPT				  
-					{e1 = rate_histo_mu->GetBinContent( rate_histo_mu->FindBin(ss.lep1_p4().pt(), ss.lep1_p4().eta()) );}
-				  Npn = Npn + (e1/(1-e1))*weight;				
+					//{e1 = rate_histo_mu->GetBinContent( rate_histo_mu->FindBin(ss.lep1_p4().pt(), fabs(ss.lep1_p4().eta())) );}
+					{e1 = getFakeRate(rate_histo_mu, ss.lep1_p4().pt(), fabs(ss.lep1_p4().eta()) );}
+				  Npn = Npn + (e1/(1-e1))*weight;
 				}
 			}
 		}
@@ -215,22 +239,23 @@ int ScanChain( TChain* chain, bool fast = true, int nEvents = -1, string skimFil
               if( !ss.lep1_passes_id() && !ss.lep2_passes_id() )   //just making sure
 			   {
 				  if( abs(ss.lep2_id()) == 11 )
-					{e2 = rate_histo_e->GetBinContent( rate_histo_e->FindBin(ss.lep2_p4().pt(), ss.lep2_p4().eta()) );}
+					//{e2 = rate_histo_e->GetBinContent( rate_histo_e->FindBin(ss.lep2_p4().pt(), fabs(ss.lep2_p4().eta())) );}
+					{e2 = getFakeRate( rate_histo_e, ss.lep2_p4().pt(), fabs(ss.lep2_p4().eta()) );}
 				  else if( abs(ss.lep2_id()) == 13 )
-					{e2 = rate_histo_mu->GetBinContent( rate_histo_mu->FindBin(ss.lep2_p4().pt(), ss.lep2_p4().eta()) );}				
+					//{e2 = rate_histo_mu->GetBinContent( rate_histo_mu->FindBin(ss.lep2_p4().pt(), fabs(ss.lep2_p4().eta())) );}				
+					{e2 = getFakeRate( rate_histo_mu, ss.lep2_p4().pt(), fabs(ss.lep2_p4().eta()) );}				
 				  if( abs(ss.lep1_id()) == 11 )				  
-					{e1 = rate_histo_e->GetBinContent( rate_histo_e->FindBin(ss.lep1_p4().pt(), ss.lep1_p4().eta()) );}
+					//{e1 = rate_histo_e->GetBinContent( rate_histo_e->FindBin(ss.lep1_p4().pt(), fabs(ss.lep1_p4().eta())) );}
+					{e1 = getFakeRate( rate_histo_e, ss.lep1_p4().pt(), fabs(ss.lep1_p4().eta()) );}
 				  else if( abs(ss.lep1_id()) == 13 )				  
-					{e1 = rate_histo_mu->GetBinContent( rate_histo_mu->FindBin(ss.lep1_p4().pt(), ss.lep1_p4().eta()) );}
+					//{e1 = rate_histo_mu->GetBinContent( rate_histo_mu->FindBin(ss.lep1_p4().pt(), fabs(ss.lep1_p4().eta())) );}
+					{e1 = getFakeRate( rate_histo_mu, ss.lep1_p4().pt(), fabs(ss.lep1_p4().eta()) );}
 				  Nnn = Nnn + (e1/(1-e1))*(e2/(1-e2))*weight;					
 			   }
 			}
 		}
 	  
-
-
 	  //---------------------------------------------------------------------------------------------------------------------------
-
 	  
 	}//end event loop
   
@@ -272,6 +297,8 @@ int ScanChain( TChain* chain, bool fast = true, int nEvents = -1, string skimFil
   rate_histo_e->Draw("colz,texte");
   TCanvas *c2=new TCanvas("c2","Fake Rate vs Pt, eta (muon)",800,800);
   rate_histo_mu->Draw("colz,texte");
+
+  //  cout << "\nBin Content: " <<rate_histo_e->GetBinContent( rate_histo_e->FindBin(80., 1.) ) << endl;
 
   // return
   bmark->Stop("benchmark");

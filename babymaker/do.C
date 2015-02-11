@@ -108,19 +108,21 @@ int do(){
 
   //QCD
   TChain *qcd = new TChain("Events");
-  qcd->Add("/hadoop/cms/store/group/snt/csa14/MC_CMS3_V07-00-03/QCD_Pt-50to80_MuEnrichedPt5_TuneZ2star_13TeV_pythia6/merged/merged_ntuple_1.root");
-  // qcd->Add("/hadoop/cms/store/group/snt/csa14/MC_CMS3_V07-00-03/QCD_Pt-50to80_MuEnrichedPt5_TuneZ2star_13TeV_pythia6/merged/merged_ntuple_*.root");
-  // //  qcd->Add("/hadoop/cms/store/group/snt/csa14/MC_CMS3_V07-00-03/QCD_Pt-15to20_MuEnrichedPt5_TuneZ2star_13TeV_pythia6/merged/merged_ntuple_*.root");
-  // qcd->Add("/hadoop/cms/store/group/snt/csa14/MC_CMS3_V07-00-03/QCD_Pt-20to30_MuEnrichedPt5_TuneZ2star_13TeV_pythia6/merged/merged_ntuple_*.root");
-  // qcd->Add("/hadoop/cms/store/group/snt/csa14/MC_CMS3_V07-00-03/QCD_Pt-30to50_MuEnrichedPt5_TuneZ2star_13TeV_pythia6/merged/merged_ntuple_*.root");
-  // qcd->Add("/hadoop/cms/store/group/snt/csa14/MC_CMS3_V07-00-03/QCD_Pt-80to120_MuEnrichedPt5_TuneZ2star_13TeV_pythia6/merged/merged_ntuple_*.root");
+  qcd->Add("/hadoop/cms/store/group/snt/phys14/QCD_Pt-20toInf_MuEnrichedPt15_PionKaonDecay_Tune4C_13TeV_pythia8_Phys14DR-PU20bx25_PHYS14_25_V1-v3/V07-02-03/merged_ntuple_1.root");//test w/ just 1 file
+  // qcd->Add("/hadoop/cms/store/group/snt/phys14/QCD_Pt-20toInf_MuEnrichedPt15_PionKaonDecay_Tune4C_13TeV_pythia8_Phys14DR-PU20bx25_PHYS14_25_V1-v3/V07-02-03/merged_ntuple_*.root");
+  // qcd->Add("/hadoop/cms/store/group/snt/phys14/QCD_Pt-30to50_MuEnrichedPt5_PionKaonDecay_Tune4C_13TeV_pythia8/V07-02-03/merged_ntuple_*.root");
+  // qcd->Add("/hadoop/cms/store/group/snt/phys14/QCD_Pt-50to80_MuEnrichedPt5_PionKaonDecay_Tune4C_13TeV_pythia8/V07-02-03/merged_ntuple_*.root");
+  // qcd->Add("/hadoop/cms/store/group/snt/phys14/QCD_Pt-80to120_MuEnrichedPt5_PionKaonDecay_Tune4C_13TeV_pythia8_Phys14DR-AVE20BX25_tsg_PHYS14_25_V3-v1/V07-02-03/merged_ntuple_*.root");
 
   //ttbar
   TChain *ttbar = new TChain("Events");
-  ttbar->Add("/hadoop/cms/store/group/snt/csa14/MC_CMS3_V07-00-03/TTJets_MSDecaysCKM_central_Tune4C_13TeV-madgraph-tauola/merged/merged_ntuple_1.root");
+  //ttbar->Add("/hadoop/cms/store/group/snt/csa14/MC_CMS3_V07-00-03/TTJets_MSDecaysCKM_central_Tune4C_13TeV-madgraph-tauola/merged/merged_ntuple_1.root");
+  ttbar->Add("/hadoop/cms/store/group/snt/phys14/TTJets_MSDecaysCKM_central_Tune4C_13TeV-madgraph-tauola_Phys14DR-PU20bx25_PHYS14_25_V1-v1/V07-02-05/merged/merged_ntuple_*.root");
+  ttbar->Add("/hadoop/cms/store/group/snt/phys14/TT_Tune4C_13TeV-pythia8-tauola_Phys14DR-PU20bx25_tsg_PHYS14_25_V1-v1/V07-02-03/merged_ntuple_*.root");
+  ttbar->Add("/hadoop/cms/store/group/snt/phys14/TTbarH_M-125_13TeV_amcatnlo-pythia8-tauola_Phys14DR-PU20bx25_tsg_PHYS14_25_V1-v2/V07-02-03/merged_ntuple_*.root");
   
   mylooper->looper(qcd,"qcd1", -1);
-  //  mylooper->looper(ttbar,"ttbar1", -1);
+  //mylooper->looper(ttbar,"ttbar1", -1);
 
 
 }

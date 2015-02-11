@@ -20,21 +20,10 @@ namespace samesign {
 	float &gen_met_phi() { return ss.gen_met_phi(); }
 	float &njets() { return ss.njets(); }
 	float &ht() { return ss.ht(); }
-	int &nbtags_uncorr() { return ss.nbtags_uncorr(); }
 	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &jets() { return ss.jets(); }
 	vector<float> &jets_disc() { return ss.jets_disc(); }
-	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &btags_p4_uncorr() { return ss.btags_p4_uncorr(); }
-	vector<float> &btags_disc_uncorr() { return ss.btags_disc_uncorr(); }
-	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &btags() { return ss.btags(); }
-	vector<float> &btags_disc() { return ss.btags_disc(); }
-	int &nbtags() { return ss.nbtags(); }
 	float &mt() { return ss.mt(); }
 	TString &sample() { return ss.sample(); }
-	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &genps_p4() { return ss.genps_p4(); }
-	vector<int> &genps_id() { return ss.genps_id(); }
-	vector<int> &genps_id_mother() { return ss.genps_id_mother(); }
-	vector<int> &genps_status() { return ss.genps_status(); }
-	vector<int> &genps_id_grandma() { return ss.genps_id_grandma(); }
 	ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > &p4() { return ss.p4(); }
 	ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > &mc_p4() { return ss.mc_p4(); }
 	ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > &mc_motherp4() { return ss.mc_motherp4(); }

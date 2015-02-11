@@ -74,51 +74,18 @@ protected:
 	float	ht_;
 	TBranch *ht_branch;
 	bool ht_isLoaded;
-	int	nbtags_uncorr_;
-	TBranch *nbtags_uncorr_branch;
-	bool nbtags_uncorr_isLoaded;
 	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > *jets_;
 	TBranch *jets_branch;
 	bool jets_isLoaded;
 	vector<float> *jets_disc_;
 	TBranch *jets_disc_branch;
 	bool jets_disc_isLoaded;
-	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > *btags_p4_uncorr_;
-	TBranch *btags_p4_uncorr_branch;
-	bool btags_p4_uncorr_isLoaded;
-	vector<float> *btags_disc_uncorr_;
-	TBranch *btags_disc_uncorr_branch;
-	bool btags_disc_uncorr_isLoaded;
-	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > *btags_;
-	TBranch *btags_branch;
-	bool btags_isLoaded;
-	vector<float> *btags_disc_;
-	TBranch *btags_disc_branch;
-	bool btags_disc_isLoaded;
-	int	nbtags_;
-	TBranch *nbtags_branch;
-	bool nbtags_isLoaded;
 	float	mt_;
 	TBranch *mt_branch;
 	bool mt_isLoaded;
 	TString *sample_;
 	TBranch *sample_branch;
 	bool sample_isLoaded;
-	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > *genps_p4_;
-	TBranch *genps_p4_branch;
-	bool genps_p4_isLoaded;
-	vector<int> *genps_id_;
-	TBranch *genps_id_branch;
-	bool genps_id_isLoaded;
-	vector<int> *genps_id_mother_;
-	TBranch *genps_id_mother_branch;
-	bool genps_id_mother_isLoaded;
-	vector<int> *genps_status_;
-	TBranch *genps_status_branch;
-	bool genps_status_isLoaded;
-	vector<int> *genps_id_grandma_;
-	TBranch *genps_id_grandma_branch;
-	bool genps_id_grandma_isLoaded;
 	ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > *p4_;
 	TBranch *p4_branch;
 	bool p4_isLoaded;
@@ -231,21 +198,6 @@ void Init(TTree *tree) {
 		jets_branch = tree->GetBranch("jets");
 		if (jets_branch) {jets_branch->SetAddress(&jets_);}
 	}
-	btags_p4_uncorr_branch = 0;
-	if (tree->GetBranch("btags_p4_uncorr") != 0) {
-		btags_p4_uncorr_branch = tree->GetBranch("btags_p4_uncorr");
-		if (btags_p4_uncorr_branch) {btags_p4_uncorr_branch->SetAddress(&btags_p4_uncorr_);}
-	}
-	btags_branch = 0;
-	if (tree->GetBranch("btags") != 0) {
-		btags_branch = tree->GetBranch("btags");
-		if (btags_branch) {btags_branch->SetAddress(&btags_);}
-	}
-	genps_p4_branch = 0;
-	if (tree->GetBranch("genps_p4") != 0) {
-		genps_p4_branch = tree->GetBranch("genps_p4");
-		if (genps_p4_branch) {genps_p4_branch->SetAddress(&genps_p4_);}
-	}
 	p4_branch = 0;
 	if (tree->GetBranch("p4") != 0) {
 		p4_branch = tree->GetBranch("p4");
@@ -357,30 +309,10 @@ void Init(TTree *tree) {
 		ht_branch = tree->GetBranch("ht");
 		if (ht_branch) {ht_branch->SetAddress(&ht_);}
 	}
-	nbtags_uncorr_branch = 0;
-	if (tree->GetBranch("nbtags_uncorr") != 0) {
-		nbtags_uncorr_branch = tree->GetBranch("nbtags_uncorr");
-		if (nbtags_uncorr_branch) {nbtags_uncorr_branch->SetAddress(&nbtags_uncorr_);}
-	}
 	jets_disc_branch = 0;
 	if (tree->GetBranch("jets_disc") != 0) {
 		jets_disc_branch = tree->GetBranch("jets_disc");
 		if (jets_disc_branch) {jets_disc_branch->SetAddress(&jets_disc_);}
-	}
-	btags_disc_uncorr_branch = 0;
-	if (tree->GetBranch("btags_disc_uncorr") != 0) {
-		btags_disc_uncorr_branch = tree->GetBranch("btags_disc_uncorr");
-		if (btags_disc_uncorr_branch) {btags_disc_uncorr_branch->SetAddress(&btags_disc_uncorr_);}
-	}
-	btags_disc_branch = 0;
-	if (tree->GetBranch("btags_disc") != 0) {
-		btags_disc_branch = tree->GetBranch("btags_disc");
-		if (btags_disc_branch) {btags_disc_branch->SetAddress(&btags_disc_);}
-	}
-	nbtags_branch = 0;
-	if (tree->GetBranch("nbtags") != 0) {
-		nbtags_branch = tree->GetBranch("nbtags");
-		if (nbtags_branch) {nbtags_branch->SetAddress(&nbtags_);}
 	}
 	mt_branch = 0;
 	if (tree->GetBranch("mt") != 0) {
@@ -391,26 +323,6 @@ void Init(TTree *tree) {
 	if (tree->GetBranch("sample") != 0) {
 		sample_branch = tree->GetBranch("sample");
 		if (sample_branch) {sample_branch->SetAddress(&sample_);}
-	}
-	genps_id_branch = 0;
-	if (tree->GetBranch("genps_id") != 0) {
-		genps_id_branch = tree->GetBranch("genps_id");
-		if (genps_id_branch) {genps_id_branch->SetAddress(&genps_id_);}
-	}
-	genps_id_mother_branch = 0;
-	if (tree->GetBranch("genps_id_mother") != 0) {
-		genps_id_mother_branch = tree->GetBranch("genps_id_mother");
-		if (genps_id_mother_branch) {genps_id_mother_branch->SetAddress(&genps_id_mother_);}
-	}
-	genps_status_branch = 0;
-	if (tree->GetBranch("genps_status") != 0) {
-		genps_status_branch = tree->GetBranch("genps_status");
-		if (genps_status_branch) {genps_status_branch->SetAddress(&genps_status_);}
-	}
-	genps_id_grandma_branch = 0;
-	if (tree->GetBranch("genps_id_grandma") != 0) {
-		genps_id_grandma_branch = tree->GetBranch("genps_id_grandma");
-		if (genps_id_grandma_branch) {genps_id_grandma_branch->SetAddress(&genps_id_grandma_);}
 	}
 	id_branch = 0;
 	if (tree->GetBranch("id") != 0) {
@@ -597,21 +509,10 @@ void GetEntry(unsigned int idx)
 		gen_met_phi_isLoaded = false;
 		njets_isLoaded = false;
 		ht_isLoaded = false;
-		nbtags_uncorr_isLoaded = false;
 		jets_isLoaded = false;
 		jets_disc_isLoaded = false;
-		btags_p4_uncorr_isLoaded = false;
-		btags_disc_uncorr_isLoaded = false;
-		btags_isLoaded = false;
-		btags_disc_isLoaded = false;
-		nbtags_isLoaded = false;
 		mt_isLoaded = false;
 		sample_isLoaded = false;
-		genps_p4_isLoaded = false;
-		genps_id_isLoaded = false;
-		genps_id_mother_isLoaded = false;
-		genps_status_isLoaded = false;
-		genps_id_grandma_isLoaded = false;
 		p4_isLoaded = false;
 		mc_p4_isLoaded = false;
 		mc_motherp4_isLoaded = false;
@@ -671,21 +572,10 @@ void LoadAllBranches()
 	if (gen_met_phi_branch != 0) gen_met_phi();
 	if (njets_branch != 0) njets();
 	if (ht_branch != 0) ht();
-	if (nbtags_uncorr_branch != 0) nbtags_uncorr();
 	if (jets_branch != 0) jets();
 	if (jets_disc_branch != 0) jets_disc();
-	if (btags_p4_uncorr_branch != 0) btags_p4_uncorr();
-	if (btags_disc_uncorr_branch != 0) btags_disc_uncorr();
-	if (btags_branch != 0) btags();
-	if (btags_disc_branch != 0) btags_disc();
-	if (nbtags_branch != 0) nbtags();
 	if (mt_branch != 0) mt();
 	if (sample_branch != 0) sample();
-	if (genps_p4_branch != 0) genps_p4();
-	if (genps_id_branch != 0) genps_id();
-	if (genps_id_mother_branch != 0) genps_id_mother();
-	if (genps_status_branch != 0) genps_status();
-	if (genps_id_grandma_branch != 0) genps_id_grandma();
 	if (p4_branch != 0) p4();
 	if (mc_p4_branch != 0) mc_p4();
 	if (mc_motherp4_branch != 0) mc_motherp4();
@@ -970,19 +860,6 @@ void LoadAllBranches()
 		}
 		return ht_;
 	}
-	int &nbtags_uncorr()
-	{
-		if (not nbtags_uncorr_isLoaded) {
-			if (nbtags_uncorr_branch != 0) {
-				nbtags_uncorr_branch->GetEntry(index);
-			} else { 
-				printf("branch nbtags_uncorr_branch does not exist!\n");
-				exit(1);
-			}
-			nbtags_uncorr_isLoaded = true;
-		}
-		return nbtags_uncorr_;
-	}
 	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &jets()
 	{
 		if (not jets_isLoaded) {
@@ -1009,71 +886,6 @@ void LoadAllBranches()
 		}
 		return *jets_disc_;
 	}
-	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &btags_p4_uncorr()
-	{
-		if (not btags_p4_uncorr_isLoaded) {
-			if (btags_p4_uncorr_branch != 0) {
-				btags_p4_uncorr_branch->GetEntry(index);
-			} else { 
-				printf("branch btags_p4_uncorr_branch does not exist!\n");
-				exit(1);
-			}
-			btags_p4_uncorr_isLoaded = true;
-		}
-		return *btags_p4_uncorr_;
-	}
-	vector<float> &btags_disc_uncorr()
-	{
-		if (not btags_disc_uncorr_isLoaded) {
-			if (btags_disc_uncorr_branch != 0) {
-				btags_disc_uncorr_branch->GetEntry(index);
-			} else { 
-				printf("branch btags_disc_uncorr_branch does not exist!\n");
-				exit(1);
-			}
-			btags_disc_uncorr_isLoaded = true;
-		}
-		return *btags_disc_uncorr_;
-	}
-	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &btags()
-	{
-		if (not btags_isLoaded) {
-			if (btags_branch != 0) {
-				btags_branch->GetEntry(index);
-			} else { 
-				printf("branch btags_branch does not exist!\n");
-				exit(1);
-			}
-			btags_isLoaded = true;
-		}
-		return *btags_;
-	}
-	vector<float> &btags_disc()
-	{
-		if (not btags_disc_isLoaded) {
-			if (btags_disc_branch != 0) {
-				btags_disc_branch->GetEntry(index);
-			} else { 
-				printf("branch btags_disc_branch does not exist!\n");
-				exit(1);
-			}
-			btags_disc_isLoaded = true;
-		}
-		return *btags_disc_;
-	}
-	int &nbtags()
-	{
-		if (not nbtags_isLoaded) {
-			if (nbtags_branch != 0) {
-				nbtags_branch->GetEntry(index);
-			} else { 
-				printf("branch nbtags_branch does not exist!\n");
-				exit(1);
-			}
-			nbtags_isLoaded = true;
-		}
-		return nbtags_;
-	}
 	float &mt()
 	{
 		if (not mt_isLoaded) {
@@ -1099,71 +911,6 @@ void LoadAllBranches()
 			sample_isLoaded = true;
 		}
 		return *sample_;
-	}
-	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &genps_p4()
-	{
-		if (not genps_p4_isLoaded) {
-			if (genps_p4_branch != 0) {
-				genps_p4_branch->GetEntry(index);
-			} else { 
-				printf("branch genps_p4_branch does not exist!\n");
-				exit(1);
-			}
-			genps_p4_isLoaded = true;
-		}
-		return *genps_p4_;
-	}
-	vector<int> &genps_id()
-	{
-		if (not genps_id_isLoaded) {
-			if (genps_id_branch != 0) {
-				genps_id_branch->GetEntry(index);
-			} else { 
-				printf("branch genps_id_branch does not exist!\n");
-				exit(1);
-			}
-			genps_id_isLoaded = true;
-		}
-		return *genps_id_;
-	}
-	vector<int> &genps_id_mother()
-	{
-		if (not genps_id_mother_isLoaded) {
-			if (genps_id_mother_branch != 0) {
-				genps_id_mother_branch->GetEntry(index);
-			} else { 
-				printf("branch genps_id_mother_branch does not exist!\n");
-				exit(1);
-			}
-			genps_id_mother_isLoaded = true;
-		}
-		return *genps_id_mother_;
-	}
-	vector<int> &genps_status()
-	{
-		if (not genps_status_isLoaded) {
-			if (genps_status_branch != 0) {
-				genps_status_branch->GetEntry(index);
-			} else { 
-				printf("branch genps_status_branch does not exist!\n");
-				exit(1);
-			}
-			genps_status_isLoaded = true;
-		}
-		return *genps_status_;
-	}
-	vector<int> &genps_id_grandma()
-	{
-		if (not genps_id_grandma_isLoaded) {
-			if (genps_id_grandma_branch != 0) {
-				genps_id_grandma_branch->GetEntry(index);
-			} else { 
-				printf("branch genps_id_grandma_branch does not exist!\n");
-				exit(1);
-			}
-			genps_id_grandma_isLoaded = true;
-		}
-		return *genps_id_grandma_;
 	}
 	ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > &p4()
 	{
@@ -1667,21 +1414,10 @@ namespace samesign {
 	float &gen_met_phi();
 	float &njets();
 	float &ht();
-	int &nbtags_uncorr();
 	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &jets();
 	vector<float> &jets_disc();
-	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &btags_p4_uncorr();
-	vector<float> &btags_disc_uncorr();
-	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &btags();
-	vector<float> &btags_disc();
-	int &nbtags();
 	float &mt();
 	TString &sample();
-	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &genps_p4();
-	vector<int> &genps_id();
-	vector<int> &genps_id_mother();
-	vector<int> &genps_status();
-	vector<int> &genps_id_grandma();
 	ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > &p4();
 	ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > &mc_p4();
 	ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > &mc_motherp4();

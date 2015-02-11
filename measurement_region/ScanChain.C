@@ -107,6 +107,25 @@ int ScanChain( TChain* chain, bool fast = true, int nEvents = -1, string skimFil
 	  
       // Analysis Code
 	  float weight = ss.scale1fb()*10.0;
+	  //cout<<"weight = "<<weight<<endl;
+
+	  bool jetptcut = false;
+	  int jetidx = 0;
+
+	  while( (jetidx < ss.jets().size()) && !jetptcut)
+	  	{
+	  	  if( ss.jets()[jetidx].pt() > 40. )
+	  		{jetptcut = true;}
+	  	  jetidx++;
+	  	}
+	  
+	  if( !(jetptcut && ss.met() < 20. && ss.mt() < 20) )
+	  	{continue;}
+
+	  //need pt upeer bound, otherwise overflow may cause some issues with e = 1.
+	  //only pt > 25, |eta| < 2.4 used in application. Stricter than histo bounds. 
+	  if(ss.p4().pt() > 100. || ss.p4().pt() < 25.  || fabs(ss.p4().eta()) > 2.4)
+	  	{continue;}
 
 	  //------------------------------------------------------------------------------------------
 	  //---------------------------------Find e = f(const)---------------------------------------
@@ -118,10 +137,11 @@ int ScanChain( TChain* chain, bool fast = true, int nEvents = -1, string skimFil
 	  
 	  //Using gen level info to see if prompt -> no prompt contamination in measurement region
 	  //everything else is RECO (p4, id, passes_id, FO, etc.)
-	  
-	 
+
 	  if( ss.motherID() != 1 )  //if lep is nonprompt
 		{
+		  // cout<<"nonprompt"<<endl;
+
 		  if( abs( ss.id() ) == 11 ) //it's an el
 			{
 			  if( ss.passes_id() )  //if el is tight
@@ -171,26 +191,26 @@ int ScanChain( TChain* chain, bool fast = true, int nEvents = -1, string skimFil
 			{
 			  if( ss.passes_id() )  //if el is tight
 				{ 
-				  Nt_histo->Fill(ss.p4().pt(), ss.p4().eta(), weight);     //fill histo with fake pt, eta
-				  Nt_histo_e->Fill(ss.p4().pt(), ss.p4().eta(), weight);   //
+				  Nt_histo->Fill(ss.p4().pt(), fabs(ss.p4().eta()), weight);     //fill histo with fake pt, eta
+				  Nt_histo_e->Fill(ss.p4().pt(), fabs(ss.p4().eta()), weight);   //
 				}
 			  if( ss.FO() )  //if el is FO
 				{
-				  Nl_histo->Fill(ss.p4().pt(), ss.p4().eta(), weight);     //fill histo with fake pt, eta 
-				  Nl_histo_e->Fill(ss.p4().pt(), ss.p4().eta(), weight);   //  <-- loose (as opposed to l!t)			
+				  Nl_histo->Fill(ss.p4().pt(), fabs(ss.p4().eta()), weight);     //fill histo with fake pt, eta 
+				  Nl_histo_e->Fill(ss.p4().pt(), fabs(ss.p4().eta()), weight);   //  <-- loose (as opposed to l!t)			
 				}
 			}
 		  if( abs( ss.id() ) == 13 ) // it's a mu
 			{
 			  if( ss.passes_id() )  //if mu is tight
 				{ 
-				  Nt_histo->Fill(ss.p4().pt(), ss.p4().eta(), weight);     //fill histo with fake pt, eta
-				  Nt_histo_mu->Fill(ss.p4().pt(), ss.p4().eta(), weight);   //
+				  Nt_histo->Fill(ss.p4().pt(), fabs(ss.p4().eta()), weight);     //fill histo with fake pt, eta
+				  Nt_histo_mu->Fill(ss.p4().pt(), fabs(ss.p4().eta()), weight);   //
 				}
 			  if( ss.FO() )  //if el is FO
 				{
-				  Nl_histo->Fill(ss.p4().pt(), ss.p4().eta(), weight);     //fill histo with fake pt, eta 
-				  Nl_histo_mu->Fill(ss.p4().pt(), ss.p4().eta(), weight);   //  <-- loose (as opposed to l!t)			
+				  Nl_histo->Fill(ss.p4().pt(), fabs(ss.p4().eta()), weight);     //fill histo with fake pt, eta 
+				  Nl_histo_mu->Fill(ss.p4().pt(), fabs(ss.p4().eta()), weight);   //  <-- loose (as opposed to l!t)			
 				}
 			}
 		} 

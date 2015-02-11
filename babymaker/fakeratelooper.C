@@ -60,21 +60,9 @@ class babyMaker {
     float gen_met_phi;  
     float njets;  //work on this
     float ht;  //work on this
-    int nbtags_uncorr;  //<--------------------------maybe???
     vector <LorentzVector> jets;  //work on this
-    vector <LorentzVector> btags_p4_uncorr;  //<-----maybe???
-    vector <LorentzVector> btags;  //work on this
-    int nbtags;   //work on this
-    float mt;  //<-----------------------------------maybe???
-    vector <float> btags_disc_uncorr;   //-----------maybe???
-    vector <float> jets_disc;   //<------------------maybe???
-    vector <float> btags_disc;   //<-----------------maybe???
+  vector <float> jets_disc; //work on this
     TString sample;
-    vector <LorentzVector> genps_p4;  //<------------maybe??? 
-    vector <int> genps_id;  //<----------------------maybe???
-    vector <int> genps_id_mother;  //<---------------maybe???
-    vector <int> genps_status;  //<------------------maybe???
-	vector <int> genps_id_grandma;  //<--------------maybe???
   //-------------------//
   //------MINE---------//
       //---both--//
@@ -94,6 +82,7 @@ class babyMaker {
   float ip3d;
   float ip3derr;
   int type;
+  float mt;  //work on this
       //---els---//
   float el_sigmaIEtaIEta_full5x5;
   float el_etaSC;
@@ -150,21 +139,9 @@ void babyMaker::MakeBabyNtuple(const char* output_name){
   BabyTree->Branch("gen_met_phi", &gen_met_phi);
   BabyTree->Branch("njets", &njets);
   BabyTree->Branch("ht", &ht);
-  BabyTree->Branch("nbtags_uncorr", &nbtags_uncorr);
   BabyTree->Branch("jets", &jets);
   BabyTree->Branch("jets_disc", &jets_disc);
-  BabyTree->Branch("btags_p4_uncorr", &btags_p4_uncorr);
-  BabyTree->Branch("btags_disc_uncorr", &btags_disc_uncorr);
-  BabyTree->Branch("btags", &btags);
-  BabyTree->Branch("btags_disc", &btags_disc);
-  BabyTree->Branch("nbtags", &nbtags);
-  BabyTree->Branch("mt", &mt);
   BabyTree->Branch("sample", &sample);
-  BabyTree->Branch("genps_p4", &genps_p4);
-  BabyTree->Branch("genps_id", &genps_id);
-  BabyTree->Branch("genps_id_mother", &genps_id_mother);
-  BabyTree->Branch("genps_status", &genps_status);
-  BabyTree->Branch("genps_id_grandma", &genps_id_grandma);
   //--------------------MINE----------------------------
          //---both--//
   BabyTree->Branch("p4", &p4);
@@ -183,6 +160,7 @@ void babyMaker::MakeBabyNtuple(const char* output_name){
   BabyTree->Branch("ip3d", &ip3d);
   BabyTree->Branch("ip3derr", &ip3derr);
   BabyTree->Branch("type", &type);
+  BabyTree->Branch("mt", &mt);
           //---els---//
   BabyTree->Branch("el_sigmaIEtaIEta_full5x5", &el_sigmaIEtaIEta_full5x5);
   BabyTree->Branch("el_etaSC", &el_etaSC);
@@ -229,21 +207,9 @@ void babyMaker::InitBabyNtuple(){
     gen_met_phi = -1;
     njets = -1;
     ht = -1;
-    nbtags_uncorr = -1;
     jets.clear();
 	jets_disc.clear();
-    btags_p4_uncorr.clear();
-    btags_disc_uncorr.clear();
-    btags.clear();
-    btags_disc.clear();
-    nbtags = -1;
-    mt = -1;
     sample = "";
-    genps_p4.clear();
-    genps_id.clear();
-    genps_id_mother.clear();
-    genps_status.clear();
-    genps_id_grandma.clear();
 	//--------MINE------------
          //---both--//
 	//p4 = -1;  //IDK how to init. a LorentzVector
@@ -262,6 +228,7 @@ void babyMaker::InitBabyNtuple(){
 	ip3d = -1;
 	ip3derr = -1;
 	type = -1;
+    mt = -1;
          //---els---//
 	el_sigmaIEtaIEta_full5x5 = -1;//below
 	el_etaSC = -1;
@@ -305,6 +272,7 @@ void babyMaker::InitMuonBranches(){
 	type = -1;
 	ip3d = -1;
 	ip3derr = -1;
+    mt = -1;
 	//---mus---//
 	mu_pid_PFMuon = -1;
 	mu_gfit_chi2 = -1;
@@ -333,6 +301,7 @@ void babyMaker::InitElectronBranches(){
 	ip3d = -1;
 	ip3derr = -1;
 	type = -1;
+    mt = -1;
 	//---els---//
 	el_sigmaIEtaIEta_full5x5 = -1;
 	el_etaSC = -1;
@@ -354,7 +323,7 @@ template <typename T> int sgn(T val){
     return (T(0) < val) - (val < T(0));
 }
 
-double calculateMt(const LorentzVector p4, double met, double met_phi){
+double calculateMt(const LorentzVector p4, double met, double met_phi){  //<--MT, MET, MET_PHI ARE ALL FLOATS!!!
   float phi1 = p4.Phi();
   float phi2 = met_phi;
   float Et1  = p4.Et();
@@ -478,7 +447,7 @@ int babyMaker::looper(TChain* chain, char* output_name, int nEvents, string sign
 
 	  	  //Kinematic jet cuts
 	  	  if (jet.pt() < 25) continue;   //<------WHAT CUTS DO WE WANT???
-	  	  if (fabs(jet.eta()) > 2.4) continue;
+	  	  //if (fabs(jet.eta()) > 2.4) continue; //want jets of all eta's for fake rate
 
 	  	  //Verbose
 	  	  if (verbose) cout << "Possible jet with pT: " << jet.pt() << endl;
@@ -510,23 +479,15 @@ int babyMaker::looper(TChain* chain, char* output_name, int nEvents, string sign
 	  	  //Save jets that make it this far
 	  	  jets.push_back(jet);
 	  	  ht += jet.pt();
-	  	  // float disc = tas::pfjets_combinedInclusiveSecondaryVertexV2BJetTag().at(i);  //BRANCH DOESNT EXIST.  DIFF NAME?
-	  	  // jets_disc.push_back(disc);
-
-	  	  // //Btag discriminator
-	  	  // if (disc < 0.814) continue;
-
-	  	  // //Save btags that make it this far
-	  	  // btags_disc.push_back(disc);
-	  	  // btags.push_back(tas::pfjets_p4().at(i));
-	  	}
+		  float disc = tas::pfjets_combinedInclusiveSecondaryVertexV2BJetTag().at(i);  //BRANCH DOESNT EXIST in old samples.
+		  jets_disc.push_back(disc);
+	
+		}
       njets = jets.size();
-      nbtags = btags.size();
 
       //Verbose for jets
       if (verbose){
         cout << "njets: " << njets << endl;
-        cout << "nbtags: " <<  nbtags << endl;
         for (unsigned int i = 0; i < jets.size(); i++) cout << i << " " << jets[i].pt() << " " << jets[i].eta() << endl;
       } 
 	  //-----------------------------------------------------------------------------------------------------------------------
@@ -555,10 +516,11 @@ int babyMaker::looper(TChain* chain, char* output_name, int nEvents, string sign
 		  ip3d = tas::mus_ip3d().at(i);
 		  ip3derr = tas::mus_ip3derr().at(i);
 		  type = tas::mus_type().at(i);
+		  mt = calculateMt(p4, met, metPhi); 
 
 		  passes_id = isGoodMuon(i);   //"fix me" in selection.cc.
 		  FO = isFakableMuon(i);    //"fix me" in selection.cc
-		 
+
 		  Lep mu_temp = Lep(id, i);
 		  motherID = lepMotherID(mu_temp);
 		  mc_motherp4 = tas::mus_mc_motherp4().at(i);
@@ -608,6 +570,7 @@ int babyMaker::looper(TChain* chain, char* output_name, int nEvents, string sign
 		  el_trk_charge = tas::els_trk_charge().at(i);
 		  el_threeChargeAgree = threeChargeAgree(i);
 		  type = tas::els_type().at(i);
+		  mt = calculateMt(p4, met, metPhi); 
 
 		  passes_id = isGoodElectron(i);  //"fix me" in selection.cc
 		  FO = isFakableElectron(i);  //"fix me" in selection.cc
