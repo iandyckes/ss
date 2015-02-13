@@ -22,8 +22,8 @@ namespace samesign {
 	float &ht() { return ss.ht(); }
 	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &jets() { return ss.jets(); }
 	vector<float> &jets_disc() { return ss.jets_disc(); }
-	float &mt() { return ss.mt(); }
 	TString &sample() { return ss.sample(); }
+	int &nFOs() { return ss.nFOs(); }
 	ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > &p4() { return ss.p4(); }
 	ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > &mc_p4() { return ss.mc_p4(); }
 	ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > &mc_motherp4() { return ss.mc_motherp4(); }
@@ -40,6 +40,7 @@ namespace samesign {
 	float &ip3d() { return ss.ip3d(); }
 	float &ip3derr() { return ss.ip3derr(); }
 	int &type() { return ss.type(); }
+	float &mt() { return ss.mt(); }
 	float &el_sigmaIEtaIEta_full5x5() { return ss.el_sigmaIEtaIEta_full5x5(); }
 	float &el_etaSC() { return ss.el_etaSC(); }
 	float &el_dEtaIn() { return ss.el_dEtaIn(); }

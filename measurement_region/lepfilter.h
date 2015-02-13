@@ -80,12 +80,12 @@ protected:
 	vector<float> *jets_disc_;
 	TBranch *jets_disc_branch;
 	bool jets_disc_isLoaded;
-	float	mt_;
-	TBranch *mt_branch;
-	bool mt_isLoaded;
 	TString *sample_;
 	TBranch *sample_branch;
 	bool sample_isLoaded;
+	int	nFOs_;
+	TBranch *nFOs_branch;
+	bool nFOs_isLoaded;
 	ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > *p4_;
 	TBranch *p4_branch;
 	bool p4_isLoaded;
@@ -134,6 +134,9 @@ protected:
 	int	type_;
 	TBranch *type_branch;
 	bool type_isLoaded;
+	float	mt_;
+	TBranch *mt_branch;
+	bool mt_isLoaded;
 	float	el_sigmaIEtaIEta_full5x5_;
 	TBranch *el_sigmaIEtaIEta_full5x5_branch;
 	bool el_sigmaIEtaIEta_full5x5_isLoaded;
@@ -314,15 +317,15 @@ void Init(TTree *tree) {
 		jets_disc_branch = tree->GetBranch("jets_disc");
 		if (jets_disc_branch) {jets_disc_branch->SetAddress(&jets_disc_);}
 	}
-	mt_branch = 0;
-	if (tree->GetBranch("mt") != 0) {
-		mt_branch = tree->GetBranch("mt");
-		if (mt_branch) {mt_branch->SetAddress(&mt_);}
-	}
 	sample_branch = 0;
 	if (tree->GetBranch("sample") != 0) {
 		sample_branch = tree->GetBranch("sample");
 		if (sample_branch) {sample_branch->SetAddress(&sample_);}
+	}
+	nFOs_branch = 0;
+	if (tree->GetBranch("nFOs") != 0) {
+		nFOs_branch = tree->GetBranch("nFOs");
+		if (nFOs_branch) {nFOs_branch->SetAddress(&nFOs_);}
 	}
 	id_branch = 0;
 	if (tree->GetBranch("id") != 0) {
@@ -388,6 +391,11 @@ void Init(TTree *tree) {
 	if (tree->GetBranch("type") != 0) {
 		type_branch = tree->GetBranch("type");
 		if (type_branch) {type_branch->SetAddress(&type_);}
+	}
+	mt_branch = 0;
+	if (tree->GetBranch("mt") != 0) {
+		mt_branch = tree->GetBranch("mt");
+		if (mt_branch) {mt_branch->SetAddress(&mt_);}
 	}
 	el_sigmaIEtaIEta_full5x5_branch = 0;
 	if (tree->GetBranch("el_sigmaIEtaIEta_full5x5") != 0) {
@@ -511,8 +519,8 @@ void GetEntry(unsigned int idx)
 		ht_isLoaded = false;
 		jets_isLoaded = false;
 		jets_disc_isLoaded = false;
-		mt_isLoaded = false;
 		sample_isLoaded = false;
+		nFOs_isLoaded = false;
 		p4_isLoaded = false;
 		mc_p4_isLoaded = false;
 		mc_motherp4_isLoaded = false;
@@ -529,6 +537,7 @@ void GetEntry(unsigned int idx)
 		ip3d_isLoaded = false;
 		ip3derr_isLoaded = false;
 		type_isLoaded = false;
+		mt_isLoaded = false;
 		el_sigmaIEtaIEta_full5x5_isLoaded = false;
 		el_etaSC_isLoaded = false;
 		el_dEtaIn_isLoaded = false;
@@ -574,8 +583,8 @@ void LoadAllBranches()
 	if (ht_branch != 0) ht();
 	if (jets_branch != 0) jets();
 	if (jets_disc_branch != 0) jets_disc();
-	if (mt_branch != 0) mt();
 	if (sample_branch != 0) sample();
+	if (nFOs_branch != 0) nFOs();
 	if (p4_branch != 0) p4();
 	if (mc_p4_branch != 0) mc_p4();
 	if (mc_motherp4_branch != 0) mc_motherp4();
@@ -592,6 +601,7 @@ void LoadAllBranches()
 	if (ip3d_branch != 0) ip3d();
 	if (ip3derr_branch != 0) ip3derr();
 	if (type_branch != 0) type();
+	if (mt_branch != 0) mt();
 	if (el_sigmaIEtaIEta_full5x5_branch != 0) el_sigmaIEtaIEta_full5x5();
 	if (el_etaSC_branch != 0) el_etaSC();
 	if (el_dEtaIn_branch != 0) el_dEtaIn();
@@ -886,19 +896,6 @@ void LoadAllBranches()
 		}
 		return *jets_disc_;
 	}
-	float &mt()
-	{
-		if (not mt_isLoaded) {
-			if (mt_branch != 0) {
-				mt_branch->GetEntry(index);
-			} else { 
-				printf("branch mt_branch does not exist!\n");
-				exit(1);
-			}
-			mt_isLoaded = true;
-		}
-		return mt_;
-	}
 	TString &sample()
 	{
 		if (not sample_isLoaded) {
@@ -911,6 +908,19 @@ void LoadAllBranches()
 			sample_isLoaded = true;
 		}
 		return *sample_;
+	}
+	int &nFOs()
+	{
+		if (not nFOs_isLoaded) {
+			if (nFOs_branch != 0) {
+				nFOs_branch->GetEntry(index);
+			} else { 
+				printf("branch nFOs_branch does not exist!\n");
+				exit(1);
+			}
+			nFOs_isLoaded = true;
+		}
+		return nFOs_;
 	}
 	ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > &p4()
 	{
@@ -1119,6 +1129,19 @@ void LoadAllBranches()
 			type_isLoaded = true;
 		}
 		return type_;
+	}
+	float &mt()
+	{
+		if (not mt_isLoaded) {
+			if (mt_branch != 0) {
+				mt_branch->GetEntry(index);
+			} else { 
+				printf("branch mt_branch does not exist!\n");
+				exit(1);
+			}
+			mt_isLoaded = true;
+		}
+		return mt_;
 	}
 	float &el_sigmaIEtaIEta_full5x5()
 	{
@@ -1416,8 +1439,8 @@ namespace samesign {
 	float &ht();
 	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &jets();
 	vector<float> &jets_disc();
-	float &mt();
 	TString &sample();
+	int &nFOs();
 	ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > &p4();
 	ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > &mc_p4();
 	ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > &mc_motherp4();
@@ -1434,6 +1457,7 @@ namespace samesign {
 	float &ip3d();
 	float &ip3derr();
 	int &type();
+	float &mt();
 	float &el_sigmaIEtaIEta_full5x5();
 	float &el_etaSC();
 	float &el_dEtaIn();

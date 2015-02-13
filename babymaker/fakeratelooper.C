@@ -20,7 +20,7 @@ typedef vector<pair<const LorentzVector *, double> > jets_with_corr_t;
 using namespace std;
 
 //Switches
-char* path = "../fake_rate_output/V00-00-02";
+char* path = "../fake_rate_output/V00-00-03";
 bool verbose = 0;
 unsigned int evt_cut = 74994186;
 
@@ -58,11 +58,12 @@ class babyMaker {
     float kfactor;      
     float gen_met;      
     float gen_met_phi;  
-    float njets;  //work on this
-    float ht;  //work on this
-    vector <LorentzVector> jets;  //work on this
-  vector <float> jets_disc; //work on this
+    float njets;  
+    float ht;  
+    vector <LorentzVector> jets;
+    vector <float> jets_disc; 
     TString sample;
+    int nFOs;
   //-------------------//
   //------MINE---------//
       //---both--//
@@ -82,7 +83,7 @@ class babyMaker {
   float ip3d;
   float ip3derr;
   int type;
-  float mt;  //work on this
+  float mt;
       //---els---//
   float el_sigmaIEtaIEta_full5x5;
   float el_etaSC;
@@ -142,6 +143,7 @@ void babyMaker::MakeBabyNtuple(const char* output_name){
   BabyTree->Branch("jets", &jets);
   BabyTree->Branch("jets_disc", &jets_disc);
   BabyTree->Branch("sample", &sample);
+  BabyTree->Branch("nFOs", &nFOs);
   //--------------------MINE----------------------------
          //---both--//
   BabyTree->Branch("p4", &p4);
@@ -210,11 +212,12 @@ void babyMaker::InitBabyNtuple(){
     jets.clear();
 	jets_disc.clear();
     sample = "";
+    nFOs = -1;
 	//--------MINE------------
          //---both--//
-	//p4 = -1;  //IDK how to init. a LorentzVector
-	//mc_p4 = -1;   //IDK how to init. a LorentzVector
-	//mc_motherp4 = -1;   //IDK how to init. a LorentzVector
+	p4 = LorentzVector(0,0,0,0); 
+	mc_p4 = LorentzVector(0,0,0,0);
+	mc_motherp4 = LorentzVector(0,0,0,0);
 	id = -1; 
 	idx = -1;
 	d0 = -1;
@@ -256,9 +259,9 @@ void babyMaker::InitBabyNtuple(){
 
 void babyMaker::InitMuonBranches(){
   //---both---//
-	//p4 = -1;
-	//mc_p4 = -1;
-	//mc_motherp4 = -1;
+    p4 = LorentzVector(0,0,0,0); 
+	mc_p4 = LorentzVector(0,0,0,0);
+	mc_motherp4 = LorentzVector(0,0,0,0);
 	id = -1; 
     idx = -1;
 	d0 = -1;
@@ -285,9 +288,9 @@ void babyMaker::InitMuonBranches(){
 
 void babyMaker::InitElectronBranches(){
   //---both--//
-	//p4 = -1;  //IDK how to init. a LorentzVector
-	//mc_p4 = -1;   //IDK how to init. a LorentzVector
-	//mc_motherp4 = -1;   //IDK how to init. a LorentzVector
+    p4 = LorentzVector(0,0,0,0);
+	mc_p4 = LorentzVector(0,0,0,0);
+	mc_motherp4 = LorentzVector(0,0,0,0);
 	id = -1; 
 	idx = -1;
 	d0 = -1;
@@ -439,7 +442,7 @@ int babyMaker::looper(TChain* chain, char* output_name, int nEvents, string sign
       scale1fb = is_real_data ? 1 : tas::evt_scale1fb();
 	  
 	  //-------------------------------------------------------------------------------------------------------------
-	  //Determine and save jet and b-tag variables
+	  //Determine and save jet variables
       ht = 0;
       for (unsigned int i = 0; i < tas::pfjets_p4().size(); i++)
 	  	{
@@ -491,6 +494,20 @@ int babyMaker::looper(TChain* chain, char* output_name, int nEvents, string sign
         for (unsigned int i = 0; i < jets.size(); i++) cout << i << " " << jets[i].pt() << " " << jets[i].eta() << endl;
       } 
 	  //-----------------------------------------------------------------------------------------------------------------------
+
+	  int count = 0;
+
+	  for(int j = 0; j < tas::mus_p4().size(); j++)
+	  	{
+	  	  if(isFakableMuon(j))
+	  		{count++;}
+	  	}
+	  for(int j = 0; j < tas::els_p4().size(); j++)
+	  	{
+	  	  if(isFakableElectron(j))
+	  		{count++;}
+	  	}
+	  nFOs = count;
 
 	  //Muon Loop
 	  //cout<<"\nBegin Muon looping"<<endl;	  
