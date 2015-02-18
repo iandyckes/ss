@@ -31,7 +31,7 @@ float getFakeRate(TH2D* histo, float pt, float eta)
   else
 	{
 	  e = histo->GetBinContent( histo->FindBin(99., fabs(eta) ));
-	  cout<<"fake rate = " << /*histo->GetBinContent( histo->FindBin(pt, fabs(eta) ))*/ e <<", ";
+	  //cout<<"fake rate = " << /*histo->GetBinContent( histo->FindBin(pt, fabs(eta) ))*/ e <<", ";
 	}
   return e;
 }
@@ -46,10 +46,6 @@ int ScanChain( TChain* chain, bool fast = true, int nEvents = -1, string skimFil
   // Example Histograms
   TDirectory *rootdir = gDirectory->GetDirectory("Rint:");
 
-  // TH1F *samplehisto = new TH1F("samplehisto", "Example histogram", 200,0,200);
-  // samplehisto->SetDirectory(rootdir);
-  // //Sumw2()!
-
   //---Load rate histos-----//
   TFile *InputFile = new TFile("../measurement_region/rate_histos.root","read");
   TH2D *rate_histo = (TH2D*) InputFile->Get("rate_histo")->Clone("rate_histo");
@@ -57,28 +53,28 @@ int ScanChain( TChain* chain, bool fast = true, int nEvents = -1, string skimFil
   TH2D *rate_histo_mu = (TH2D*) InputFile->Get("rate_histo_mu")->Clone("rate_histo_mu");
 
   //----------------------
-  float prompt2_gen = 0.;  //2 prompt leptons in ss pairs
-  float prompt2_reco = 0.;  //2 prompt leptons in ss pairs
-  float prompt1_gen = 0.;  //1 prompt leptons in ss pairs
-  float prompt1_reco = 0.;  //1 prompt leptons in ss pairs
-  float prompt0_gen = 0.;  //0 prompt leptons in ss pairs
-  float prompt0_reco = 0.;  //0 prompt leptons in ss pairs
-  float sign_misid_gen = 0.;
-  float sign_misid_reco = 0.;
-  float Nss_gen=0.;
-  float Nss_reco=0.;
-  float NpromptL1_reco=0.;
-  float NpromptL1_gen=0.;
-  float NpromptL2_reco=0.;
-  float NpromptL2_gen=0.;
+  float prompt2_gen = 0.;     //2 prompt leptons in ss pairs
+  float prompt2_reco = 0.;    //2 prompt leptons in ss pairs
+  float prompt1_gen = 0.;     //1 prompt leptons in ss pairs
+  float prompt1_reco = 0.;    //1 prompt leptons in ss pairs
+  float prompt0_gen = 0.;     //0 prompt leptons in ss pairs
+  float prompt0_reco = 0.;    //0 prompt leptons in ss pairs
+  float sign_misid_gen = 0.;  //number of reco ss that are gen os
+  float sign_misid_reco = 0.; // =0
+  float Nss_gen=0.;           //number ss events
+  float Nss_reco=0.;          //number ss events
+  float NpromptL1_reco=0.;    //events where lep1 is prompt
+  float NpromptL1_gen=0.;     //events where lep1 is prompt
+  float NpromptL2_reco=0.;    //events where lep2 is prompt
+  float NpromptL2_gen=0.;     //events where lep2 is prompt
   //----------------------
 
   //e determination
-  float Npn = 0.;
-  float Nnn = 0.;
-   float e = 0.; //rate = Nt/(Nt+Nl)
-  float e1 = 0.; //rate = Nt/(Nt+Nl)
-  float e2 = 0.; //rate = Nt/(Nt+Nl)
+  float Npn = 0.; //# of prompt-nonprompt tight-tight pairs
+  float Nnn = 0.; //# of nonprompt-nonprompt tight-tight pairs
+   float e = 0.;  //rate = Nt/Nl
+  float e1 = 0.;  //rate = Nt/Nl
+  float e2 = 0.;  //rate = Nt/Nl
   //----------------
 
   // Loop over events to Analyze
@@ -121,7 +117,7 @@ int ScanChain( TChain* chain, bool fast = true, int nEvents = -1, string skimFil
 	  	  {continue;}
 	  	} 
 
-	  //need this? NOT SO SURE, otherwise overflow causesmay cause some issues with e = 1.
+	  //need this?  overflow may cause some issues with e = 1.
 	  //make eta cut at 2.4 (not enforced anywhere else on ttbar).  pt > 20 redundant.
 	  //don't vetos those above 100. Just use last bin for fake rate.
 	  if(ss.lep1_p4().pt() < 20. || ss.lep2_p4().pt() < 20. || fabs(ss.lep1_p4().eta()) > 2.4 || fabs(ss.lep2_p4().eta()) > 2.4)
@@ -138,8 +134,8 @@ int ScanChain( TChain* chain, bool fast = true, int nEvents = -1, string skimFil
 			}
 		  else
 			{
-			  Nss_reco = Nss_reco + weight;
 			  //It's a same sign pair.
+			  Nss_reco = Nss_reco + weight;
 			  if( ss.lep1_motherID()==1 && ss.lep2_motherID()==1 )
 				{
 				  prompt2_reco = prompt2_reco + weight;
@@ -148,12 +144,12 @@ int ScanChain( TChain* chain, bool fast = true, int nEvents = -1, string skimFil
 				}
 			  else if( ss.lep1_motherID()==1 && ss.lep2_motherID()!=1 )
 				{
-				  prompt1_reco = prompt1_reco + weight;  //Nnn.  What I'm interested in
+				  prompt1_reco = prompt1_reco + weight;  
 				  NpromptL1_reco = NpromptL1_reco + weight;				
 				}
 			  else if( ss.lep1_motherID()!=1 && ss.lep2_motherID()==1 )
 				{
-				  prompt1_reco = prompt1_reco + weight;  //Nnn.  What I'm interested in
+				  prompt1_reco = prompt1_reco + weight; 
 				  NpromptL2_reco = NpromptL2_reco + weight;				
 				}
 			  else if( (ss.lep1_motherID()!=1 && ss.lep2_motherID()!=1) ) //don't need to explicitly write it.  can just use else
@@ -172,8 +168,8 @@ int ScanChain( TChain* chain, bool fast = true, int nEvents = -1, string skimFil
 			}
 		  else
 			{
+			  //It's a same sign pair.
 			  Nss_gen = Nss_gen + weight;
-			  //It's a same sign pair.  shouldn't =0
 			  if( ss.lep1_motherID()==1 && ss.lep2_motherID()==1 )
 				{
 				  prompt2_gen = prompt2_gen + weight;
@@ -281,9 +277,6 @@ int ScanChain( TChain* chain, bool fast = true, int nEvents = -1, string skimFil
   cout<<setw(15)<<"Nprompt L2"<<setw(15)<<NpromptL2_reco<<setw(15)<<NpromptL2_gen<<endl;
   cout<<"---------------------------------------------"<<endl;
 
-  // cout<<"\nnum_hyp_1:"<<num_hyp_1<<endl;
-  // cout<<"num_ll:"<<num_ll<<endl;
-
   cout<<setw(25)<<" "<<setw(10)<<"EST"<<setw(10)<<"GEN"<<setw(10)<<"EST/GEN"<<endl;
   cout<<setw(25)<<"Npn:"<<setw(10)<<Npn<<setw(10)<<prompt1_reco<<setw(10)<<Npn/prompt1_reco<<endl;
   cout<<setw(25)<<"Nnn:"<<setw(10)<<Nnn<<setw(10)<<prompt0_reco<<setw(10)<<Nnn/prompt0_reco<<endl;
@@ -297,8 +290,6 @@ int ScanChain( TChain* chain, bool fast = true, int nEvents = -1, string skimFil
   rate_histo_e->Draw("colz,texte");
   TCanvas *c2=new TCanvas("c2","Fake Rate vs Pt, eta (muon)",800,800);
   rate_histo_mu->Draw("colz,texte");
-
-  //  cout << "\nBin Content: " <<rate_histo_e->GetBinContent( rate_histo_e->FindBin(80., 1.) ) << endl;
 
   // return
   bmark->Stop("benchmark");

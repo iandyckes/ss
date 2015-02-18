@@ -32,9 +32,6 @@ int ScanChain( TChain* chain, bool fast = true, int nEvents = -1, string skimFil
   // Example Histograms
   TDirectory *rootdir = gDirectory->GetDirectory("Rint:");
 
-  // TH1F *samplehisto = new TH1F("samplehisto", "Example histogram", 200,0,200);
-  // samplehisto->SetDirectory(rootdir);
-  // //Sumw2()!
   TH2D *Nt_histo = new TH2D("Nt_histo", "Nt vs Pt, Eta", 8,20,100,3,0,3);
   Nt_histo->SetDirectory(rootdir);
   Nt_histo->Sumw2();
@@ -62,10 +59,10 @@ int ScanChain( TChain* chain, bool fast = true, int nEvents = -1, string skimFil
   //----------------------
 
   //e determination
-  float Nt = 0.;  //# of events where one lep passes tight and is prompt, and other lepton passes tight but is nonprompt
-  float Nl = 0.;  //# of events where one lep passes tight and is prompt, and other lepton passes loose but fails tight  and is nonprompt
-  float e = 0.; //rate = Nt/(Nt+Nl)
-  float Nt_e = 0.;  
+  float Nt = 0.;  //# of tight leptons
+  float Nl = 0.;  //# of loose leptons
+  float e = 0.;   //rate = Nt/(Nl)
+  float Nt_e = 0.;
   float Nl_e = 0.; 
   float e_e = 0.;
   float Nt_mu = 0.;  
@@ -107,12 +104,11 @@ int ScanChain( TChain* chain, bool fast = true, int nEvents = -1, string skimFil
 	  
       // Analysis Code
 	  float weight = ss.scale1fb()*10.0;
-	  //cout<<"weight = "<<weight<<endl;
 
 	  bool jetptcut = false;
 	  int jetidx = 0;
 
-	  while( (jetidx < ss.jets().size()) && !jetptcut)
+	  while( (jetidx < ss.jets().size()) && !jetptcut) //check to see if at least one jet w/ pt > 40
 	  	{
 	  	  if( ss.jets()[jetidx].pt() > 40. )
 	  		{jetptcut = true;}
@@ -122,7 +118,10 @@ int ScanChain( TChain* chain, bool fast = true, int nEvents = -1, string skimFil
 	  if( !(jetptcut && ss.met() < 20. && ss.mt() < 20) )
 	  	{continue;}
 
-	  //need pt upeer bound, otherwise overflow may cause some issues with e = 1.
+	  if(ss.nFOs() != 1) //if more than 1 FO in event
+		{continue;}
+
+	  //need pt upper bound matching histo bounds, otherwise overflow may cause some issues with e = 1.
 	  //only pt > 25, |eta| < 2.4 used in application. Stricter than histo bounds. 
 	  if(ss.p4().pt() > 100. || ss.p4().pt() < 25.  || fabs(ss.p4().eta()) > 2.4)
 	  	{continue;}
@@ -140,7 +139,6 @@ int ScanChain( TChain* chain, bool fast = true, int nEvents = -1, string skimFil
 
 	  if( ss.motherID() != 1 )  //if lep is nonprompt
 		{
-		  // cout<<"nonprompt"<<endl;
 
 		  if( abs( ss.id() ) == 11 ) //it's an el
 			{
@@ -158,7 +156,7 @@ int ScanChain( TChain* chain, bool fast = true, int nEvents = -1, string skimFil
 
 		  if( abs( ss.id() ) == 13 ) //it's a mu
 			{
-			  if( ss.passes_id() )  //if el is tight
+			  if( ss.passes_id() )  //if mu is tight
 				{ 
 				  Nt = Nt + weight;
 				  Nt_mu = Nt_mu + weight;
@@ -170,8 +168,6 @@ int ScanChain( TChain* chain, bool fast = true, int nEvents = -1, string skimFil
 				}
 			}
 		} 
-
-	  //---------------------------------------------------------------------------------------------------------------------------
 
 	  //------------------------------------------------------------------------------------------
 	  //---------------------------------Find e = f(Pt,eta)---------------------------------------
@@ -228,17 +224,13 @@ int ScanChain( TChain* chain, bool fast = true, int nEvents = -1, string skimFil
     cout << Form( "ERROR: number of events from files (%d) is not equal to total number of events (%d)", nEventsChain, nEventsTotal ) << endl;
   }
 
-  //  e = Nt/(Nt+Nl);
   e = Nt/(Nl);
-  //  e_e = Nt_e/(Nt_e+Nl_e);
   e_e = Nt_e/(Nl_e);
-  //  e_mu = Nt_mu/(Nt_mu+Nl_mu);
   e_mu = Nt_mu/(Nl_mu);
 
   cout<<"\nReco: "<<"Nt = "<<Nt<<", Nl = "<<Nl<<", e ="<<e<<endl;
   cout<<"\nReco (el): "<<"Nt = "<<Nt_e<<", Nl = "<<Nl_e<<", e ="<<e_e<<endl;
   cout<<"\nReco (mu): "<<"Nt = "<<Nt_mu<<", Nl = "<<Nl_mu<<", e ="<<e_mu<<endl<<endl;
-
 
   //Histograms
   TH2D *rate_histo = (TH2D*) Nt_histo->Clone("rate_histo");
@@ -266,13 +258,10 @@ int ScanChain( TChain* chain, bool fast = true, int nEvents = -1, string skimFil
   gStyle->SetPaintTextFormat("1.3f");
 
   TCanvas *c0=new TCanvas("c0","Fake Rate vs Pt, eta",800,800);
-  //  rate_histo->Draw("LEGO1");
   rate_histo->Draw("colz,texte");
   TCanvas *c1=new TCanvas("c1","Fake Rate vs Pt, eta (electron)",800,800);
-  //  rate_histo_e->Draw("LEGO1");
   rate_histo_e->Draw("colz,texte");
   TCanvas *c2=new TCanvas("c2","Fake Rate vs Pt, eta (muon)",800,800);
-  //  rate_histo_mu->Draw("LEGO1");
   rate_histo_mu->Draw("colz,texte");
 
   //---save histos-------//
